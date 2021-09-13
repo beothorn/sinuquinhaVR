@@ -1,0 +1,138 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Spatial.gd" type="Script" id=1]
+[ext_resource path="res://RightController.gd" type="Script" id=2]
+[ext_resource path="res://LeftController.gd" type="Script" id=3]
+[ext_resource path="res://assets/pool-table.obj" type="ArrayMesh" id=4]
+
+[sub_resource type="SphereMesh" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+albedo_color = Color( 0.0901961, 0, 1, 1 )
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 1, 0.00784314, 0.00784314, 1 )
+
+[sub_resource type="SphereMesh" id=4]
+material = SubResource( 3 )
+
+[sub_resource type="VisualShaderNodeVec3Constant" id=5]
+constant = Vector3( 0, 0.3, 0.1 )
+
+[sub_resource type="VisualShader" id=6]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx;
+
+
+
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// Vector:2
+	vec3 n_out2p0 = vec3(0.000000, 0.300000, 0.100000);
+
+// Output:0
+	ALBEDO = n_out2p0;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+graph_offset = Vector2( -484.667, 356.667 )
+nodes/fragment/2/node = SubResource( 5 )
+nodes/fragment/2/position = Vector2( -460, 220 )
+nodes/fragment/connections = PoolIntArray( 2, 0, 0, 0 )
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 6 )
+
+[sub_resource type="BoxShape" id=8]
+
+[sub_resource type="SphereShape" id=9]
+radius = 0.0676832
+
+[node name="Spatial" type="Spatial"]
+script = ExtResource( 1 )
+debug = false
+
+[node name="ARVROrigin" type="ARVROrigin" parent="."]
+transform = Transform( -0.999866, 0, -0.016353, 0, 1, 0, 0.016353, 0, -0.999866, 0, 1.5104, 0 )
+
+[node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
+
+[node name="LeftController" type="ARVRController" parent="ARVROrigin"]
+script = ExtResource( 3 )
+
+[node name="CSGMesh" type="CSGMesh" parent="ARVROrigin/LeftController"]
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
+mesh = SubResource( 1 )
+material = SubResource( 2 )
+
+[node name="RightController" type="ARVRController" parent="ARVROrigin"]
+controller_id = 2
+script = ExtResource( 2 )
+
+[node name="CSGMesh" type="CSGMesh" parent="ARVROrigin/RightController"]
+transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
+mesh = SubResource( 4 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.632121, 0 )
+mesh = ExtResource( 4 )
+material/0 = null
+material/1 = null
+material/2 = null
+material/3 = null
+material/4 = null
+material/5 = null
+material/6 = null
+material/7 = null
+material/8 = null
+material/9 = null
+material/10 = null
+material/11 = null
+material/12 = null
+material/13 = null
+material/14 = null
+material/15 = null
+material/16 = null
+material/17 = null
+material/18 = null
+material/19 = null
+material/20 = null
+material/21 = null
+material/22 = null
+material/23 = null
+material/24 = null
+material/25 = null
+material/26 = null
+material/27 = null
+material/28 = null
+material/29 = null
+
+[node name="PoolTable" type="StaticBody" parent="."]
+
+[node name="PoolTable" type="CSGBox" parent="PoolTable"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.95035 )
+material = SubResource( 7 )
+
+[node name="CollisionShape" type="CollisionShape" parent="PoolTable"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.96522 )
+shape = SubResource( 8 )
+
+[node name="RigidBody" type="RigidBody" parent="."]
+
+[node name="CueBall" type="CSGSphere" parent="RigidBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.146757, 2.06576, 1.98088 )
+radius = 0.0663443
+
+[node name="CollisionShape" type="CollisionShape" parent="RigidBody"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.145898, 2.06621, 1.98109 )
+shape = SubResource( 9 )
