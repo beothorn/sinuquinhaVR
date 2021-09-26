@@ -1,8 +1,6 @@
 extends Spatial
 
-
 var perform_runtime_config = false
-
 
 onready var ovr_init_config_pre = preload("res://addons/godot_ovrmobile/OvrInitConfig.gdns")
 onready var ovr_performance_pre = preload("res://addons/godot_ovrmobile/OvrPerformance.gdns")
