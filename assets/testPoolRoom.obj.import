@@ -1,0 +1,19 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/testPoolRoom.obj-43d72d3bb525428c429c1928ca9ec814.mesh"
+
+[deps]
+
+files=[ "res://.import/testPoolRoom.obj-43d72d3bb525428c429c1928ca9ec814.mesh" ]
+
+source_file="res://assets/testPoolRoom.obj"
+dest_files=[ "res://.import/testPoolRoom.obj-43d72d3bb525428c429c1928ca9ec814.mesh", "res://.import/testPoolRoom.obj-43d72d3bb525428c429c1928ca9ec814.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+optimize_mesh=true

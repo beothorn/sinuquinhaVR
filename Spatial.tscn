@@ -1,35 +1,92 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://Spatial.gd" type="Script" id=1]
 [ext_resource path="res://RightController.gd" type="Script" id=2]
 [ext_resource path="res://LeftController.gd" type="Script" id=3]
-[ext_resource path="res://assets/pool-table.obj" type="ArrayMesh" id=4]
+[ext_resource path="res://assets/testPoolRoom.obj" type="ArrayMesh" id=4]
+[ext_resource path="res://assets/Oculus Touch for Quest 2/right_joy.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/Oculus Touch for Quest 2/left_joy.tscn" type="PackedScene" id=6]
 
-[sub_resource type="SphereMesh" id=1]
+[sub_resource type="PlaneMesh" id=13]
 
-[sub_resource type="SpatialMaterial" id=2]
-albedo_color = Color( 0.0901961, 0, 1, 1 )
+[sub_resource type="VisualShaderNodeVec3Constant" id=14]
+constant = Vector3( 10, 10, 10 )
 
-[sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 1, 0.00784314, 0.00784314, 1 )
+[sub_resource type="VisualShader" id=15]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx;
 
-[sub_resource type="SphereMesh" id=4]
-material = SubResource( 3 )
 
-[sub_resource type="SphereShape" id=10]
-radius = 0.101798
 
-[sub_resource type="BoxShape" id=8]
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// Vector:2
+	vec3 n_out2p0 = vec3(10.000000, 10.000000, 10.000000);
+
+// Output:0
+	EMISSION = n_out2p0;
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+graph_offset = Vector2( 198.75, 189 )
+nodes/fragment/2/node = SubResource( 14 )
+nodes/fragment/2/position = Vector2( -60, 160 )
+nodes/fragment/connections = PoolIntArray( 2, 0, 0, 5 )
+
+[sub_resource type="ShaderMaterial" id=16]
+shader = SubResource( 15 )
+
+[sub_resource type="SphereShape" id=5]
+radius = 0.097438
+
+[sub_resource type="BoxShape" id=6]
 extents = Vector3( 1.41116, 0.965757, 0.806488 )
 
-[sub_resource type="BoxShape" id=11]
+[sub_resource type="BoxShape" id=7]
 extents = Vector3( 1.41723, 1, 0.077939 )
 
-[sub_resource type="BoxShape" id=12]
+[sub_resource type="BoxShape" id=8]
 extents = Vector3( 0.075484, 0.360631, 0.697206 )
 
+[sub_resource type="VisualShader" id=11]
+code = "shader_type spatial;
+render_mode specular_schlick_ggx;
+
+
+
+
+void vertex() {
+// Output:0
+
+}
+
+void fragment() {
+// Output:0
+
+}
+
+void light() {
+// Output:0
+
+}
+"
+graph_offset = Vector2( 35, 60 )
+
+[sub_resource type="ShaderMaterial" id=12]
+shader = SubResource( 11 )
+
 [sub_resource type="SphereShape" id=9]
-radius = 0.0676832
+radius = 0.0371193
 
 [node name="World" type="Spatial"]
 script = ExtResource( 1 )
@@ -37,98 +94,73 @@ debug = false
 
 [node name="World" type="Spatial" parent="."]
 
-[node name="CSGBox" type="CSGBox" parent="World"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.03147, 0 )
-width = 11.6097
-depth = 10.1704
-
-[node name="ARVROrigin" type="ARVROrigin" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5104, 2.49244 )
-
-[node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
-
-[node name="LeftController" type="ARVRController" parent="ARVROrigin"]
-script = ExtResource( 3 )
-
-[node name="CSGMesh" type="CSGMesh" parent="ARVROrigin/LeftController"]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
-mesh = SubResource( 1 )
-material = SubResource( 2 )
-
-[node name="RightController" type="ARVRController" parent="ARVROrigin"]
-controller_id = 2
-script = ExtResource( 2 )
-
-[node name="CSGMesh" type="CSGMesh" parent="ARVROrigin/RightController"]
-transform = Transform( 0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0 )
-mesh = SubResource( 4 )
-
-[node name="RigidBody" type="RigidBody" parent="ARVROrigin/RightController"]
-
-[node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/RightController/RigidBody"]
-shape = SubResource( 10 )
-
-[node name="MeshInstance" type="MeshInstance" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.632121, 0 )
+[node name="testPoolRoom" type="MeshInstance" parent="World"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00846267, 0.0467809, -0.0170188 )
 mesh = ExtResource( 4 )
 material/0 = null
 material/1 = null
 material/2 = null
 material/3 = null
 material/4 = null
-material/5 = null
-material/6 = null
-material/7 = null
-material/8 = null
-material/9 = null
-material/10 = null
-material/11 = null
-material/12 = null
-material/13 = null
-material/14 = null
-material/15 = null
-material/16 = null
-material/17 = null
-material/18 = null
-material/19 = null
-material/20 = null
-material/21 = null
-material/22 = null
-material/23 = null
-material/24 = null
-material/25 = null
-material/26 = null
-material/27 = null
-material/28 = null
-material/29 = null
+
+[node name="CSGMesh" type="CSGMesh" parent="World"]
+transform = Transform( 1, 0, 0, 0, -1, 0.000575932, 0, -0.000575932, -1, 0, 3.61208, 0 )
+mesh = SubResource( 13 )
+material = SubResource( 16 )
+
+[node name="ARVROrigin" type="ARVROrigin" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.229113, 0 )
+
+[node name="ARVRCamera" type="ARVRCamera" parent="ARVROrigin"]
+
+[node name="LeftController" type="ARVRController" parent="ARVROrigin"]
+script = ExtResource( 3 )
+
+[node name="leftJoy" parent="ARVROrigin/LeftController" instance=ExtResource( 6 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
+
+[node name="RightController" type="ARVRController" parent="ARVROrigin"]
+controller_id = 2
+script = ExtResource( 2 )
+
+[node name="RigidBody" type="RigidBody" parent="ARVROrigin/RightController"]
+continuous_cd = true
+
+[node name="CollisionShape" type="CollisionShape" parent="ARVROrigin/RightController/RigidBody"]
+shape = SubResource( 5 )
+
+[node name="rightJoy" parent="ARVROrigin/RightController" instance=ExtResource( 5 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
 
 [node name="PoolTable" type="StaticBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0040558 )
 
 [node name="CollisionShape" type="CollisionShape" parent="PoolTable"]
-shape = SubResource( 8 )
+shape = SubResource( 6 )
 
 [node name="CollisionShape2" type="CollisionShape" parent="PoolTable"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.235464, 0.734621 )
-shape = SubResource( 11 )
+shape = SubResource( 7 )
 
 [node name="CollisionShape3" type="CollisionShape" parent="PoolTable"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.235464, -0.720128 )
-shape = SubResource( 11 )
+shape = SubResource( 7 )
 
 [node name="CollisionShape4" type="CollisionShape" parent="PoolTable"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.34782, 0.876613, 0 )
-shape = SubResource( 12 )
+shape = SubResource( 8 )
 
 [node name="CollisionShape5" type="CollisionShape" parent="PoolTable"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.34174, 0.876613, 0 )
-shape = SubResource( 12 )
+shape = SubResource( 8 )
 
 [node name="RigidBody" type="RigidBody" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.00422, -0.0593269 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.58536, -0.0593269 )
 
 [node name="CueBall" type="CSGSphere" parent="RigidBody"]
-radius = 0.0663443
+radius = 0.0369378
+radial_segments = 64
+material = SubResource( 12 )
 
 [node name="CollisionShape" type="CollisionShape" parent="RigidBody"]
 shape = SubResource( 9 )
