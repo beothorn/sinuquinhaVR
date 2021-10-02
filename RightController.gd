@@ -1,6 +1,7 @@
 extends ARVRController
 
 const CONTROLLER_DEADZONE = 0.65
+const CONTROLLER_AXIS_DEADZONE = 0.2
 const MOVEMENT_SPEED = 1.5
 
 const x_axis = 0
@@ -19,16 +20,23 @@ func _ready():
 func _physics_process(delta):
 	var was_aiming_mode = aiming_mode
 	aiming_mode = get_joystick_axis(trigger) > CONTROLLER_DEADZONE
-	$cueStick.visible = aiming_mode
+	#$cueStick.visible = aiming_mode
+	$"/root/World/cueStick".visible = aiming_mode
+	$model.visible = ! aiming_mode
 	if aiming_mode:
+		var current_y_axis = get_joystick_axis(y_axis)
 		if not was_aiming_mode:
-			cue_stick_pos = $cueStick.translation
-			cue_stick_axis = $cueStick.transform.basis.y.normalized()
-		
-		$cueStick.translation = cue_stick_pos + (cue_stick_axis * get_joystick_axis(y_axis))
+			#cue_stick_axis = $cueStick/model.transform.basis.y.normalized()
+			$"/root/World/cueStick".global_transform = $hitterPosition.global_transform
+			#$"/root/World/Ball".apply_central_impulse(Vector3(0, 10, 0))
+			#$cueStick.apply_central_impulse(Vector3(0, 10, 0))
+			#$Ball.apply_central_impulse(Vector3(0, 10, 0))
+			#$cueStick.sleeping = false
+		if current_y_axis > CONTROLLER_AXIS_DEADZONE or current_y_axis < -CONTROLLER_AXIS_DEADZONE: 
+			$"/root/World/cueStick".apply_central_impulse($"/root/World/cueStick".transform.basis.y.normalized() * current_y_axis )
 	else:
 		if was_aiming_mode:
-			$cueStick.translation = cue_stick_pos
+			$"/root/World/cueStick".sleeping = true
 		_physics_process_directional_movement(delta)
 
 func _physics_process_directional_movement(delta):
