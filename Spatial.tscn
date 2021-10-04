@@ -77,7 +77,11 @@ background_color = Color( 1, 1, 1, 1 )
 [node name="Game" type="Spatial"]
 script = ExtResource( 1 )
 
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( -0.998667, -9.30081e-10, -0.0516213, -0.0118649, 0.973227, 0.229539, 0.0502392, 0.229846, -0.971929, 0, 1.60622, -2.00534 )
+
 [node name="World" type="Spatial" parent="."]
+visible = false
 
 [node name="testPoolRoom" parent="World" instance=ExtResource( 4 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10356, 0.0265717, 0.0262829 )

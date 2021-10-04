@@ -15,6 +15,8 @@ onready var cueStick: RigidBody = $CueStick
 onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
 onready var displayCueStickHitterPositon: CSGCylinder = $VRPlayer/RightController/hitterPosition
 
+export(bool) var debug = false
+
 var aiming_mode = false
 var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 
@@ -22,16 +24,17 @@ func _ready():
 	_initialize_vr()
 
 func _initialize_vr():
-	var ovr_init_config_pre = preload("res://addons/godot_ovrmobile/OvrInitConfig.gdns")
-	var ovr_performance_pre = preload("res://addons/godot_ovrmobile/OvrPerformance.gdns")
-	
-	var ovr_init_config = ovr_init_config_pre.new()
-	var ovr_performance = ovr_performance_pre.new()
-	var interface = ARVRServer.find_interface("OVRMobile")
-	if interface:
-		ovr_init_config.set_render_target_size_multiplier(1)
-		if interface.initialize():
-			get_viewport().arvr = true
+	if not debug:
+		var ovr_init_config_pre = preload("res://addons/godot_ovrmobile/OvrInitConfig.gdns")
+		var ovr_performance_pre = preload("res://addons/godot_ovrmobile/OvrPerformance.gdns")
+		
+		var ovr_init_config = ovr_init_config_pre.new()
+		var ovr_performance = ovr_performance_pre.new()
+		var interface = ARVRServer.find_interface("OVRMobile")
+		if interface:
+			ovr_init_config.set_render_target_size_multiplier(1)
+			if interface.initialize():
+				get_viewport().arvr = true
 
 func _physics_process(delta: float):
 	_process_left_controller_input(delta)
