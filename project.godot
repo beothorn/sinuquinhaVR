@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Spatial",
+"class": "Game",
+"language": "GDScript",
+"path": "res://Game.gd"
+}, {
 "base": "OculusTracker",
 "class": "OculusHandTracker",
 "language": "GDScript",
@@ -23,11 +28,18 @@ _global_script_classes=[ {
 "class": "OculusTracker",
 "language": "GDScript",
 "path": "res://addons/godot_ovrmobile/example_scenes/oculus_tracker.gd"
+}, {
+"base": "ARVRController",
+"class": "QuestContorller",
+"language": "GDScript",
+"path": "res://Controller.gd"
 } ]
 _global_script_class_icons={
+"Game": "",
 "OculusHandTracker": "",
 "OculusTouchController": "",
-"OculusTracker": ""
+"OculusTracker": "",
+"QuestContorller": ""
 }
 
 [application]
