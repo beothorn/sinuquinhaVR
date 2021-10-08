@@ -146,6 +146,8 @@ transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.22
 collision_layer = 2
 collision_mask = 2
 custom_integrator = true
+contacts_reported = 1
+contact_monitor = true
 
 [node name="CollisionShape" type="CollisionShape" parent="CueStick"]
 shape = SubResource( 5 )
@@ -212,3 +214,5 @@ shape = SubResource( 8 )
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 14 )
+
+[connection signal="body_entered" from="CueStick" to="." method="_on_CueStick_body_entered"]

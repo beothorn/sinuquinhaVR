@@ -19,6 +19,7 @@ onready var displayCueStickHitterPositon: CSGCylinder = $VRPlayer/RightControlle
 export(bool) var debug = false
 
 var aiming_mode = false
+var after_hit = false
 var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 var cue_stick_pos: Transform
 
@@ -48,6 +49,11 @@ func _process_left_controller_input(delta: float):
 func _process_right_controller_input(delta: float):
 	var was_aiming_mode = aiming_mode
 	aiming_mode =  right_controller.is_trigger_pressed() 
+	if after_hit:
+		if not aiming_mode:
+			after_hit = false
+		else:
+			return
 	cueStick.visible = aiming_mode
 	displayCueStick.visible = ! aiming_mode
 	var current_y_axis = right_controller.get_y_axis()
@@ -97,3 +103,9 @@ func _move_player(delta: float, movement_vector: Vector2):
 func _move_real_stick_to_joystick_pos():
 	cue_stick_pos = displayCueStickHitterPositon.global_transform
 	cueStick.global_transform = displayCueStickHitterPositon.global_transform
+
+
+func _on_CueStick_body_entered(body):
+	after_hit = true
+	cueStick.visible = false
+	cueStick.sleeping = true
