@@ -6,6 +6,7 @@ class_name Game
 const DEBOUNCE_ROTATION_TIME = 0.33
 const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
+const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 
 onready var vr_player = $VRPlayer
 onready var vr_camera = $VRPlayer/VRCamera
@@ -19,6 +20,7 @@ export(bool) var debug = false
 
 var aiming_mode = false
 var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
+var cue_stick_pos: Transform
 
 func _ready():
 	_initialize_vr()
@@ -55,7 +57,7 @@ func _process_right_controller_input(delta: float):
 		cueStick.sleeping = true
 	
 	if aiming_mode:
-		cueStick.apply_central_impulse(cueStick.transform.basis.y.normalized() * current_y_axis )
+		_aim(current_y_axis)
 		
 	if(deboucing_rotation_time_counter < DEBOUNCE_ROTATION_TIME):
 		deboucing_rotation_time_counter += delta
@@ -69,6 +71,15 @@ func _process_right_controller_input(delta: float):
 		if(x < 0.0):
 			vr_player.rotate_y(PLAYER_ROTATION_ANGLE)
 			deboucing_rotation_time_counter = 0
+
+func _aim(current_y_axis: float):
+	var cue_stick_y_axis = cueStick.transform.basis.y.normalized()
+	if current_y_axis <= 0:
+		
+		cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_y_axis * CUE_STICK_BACK_SIZE )
+		cueStick.sleeping = true
+	else:
+		cueStick.apply_central_impulse(cue_stick_y_axis * current_y_axis )
 
 func _move_player(delta: float, movement_vector: Vector2):
 	var forward_direction = vr_camera.global_transform.basis.z.normalized()
@@ -84,4 +95,5 @@ func _move_player(delta: float, movement_vector: Vector2):
 		vr_player.global_translate(movement_right + movement_forward)
 
 func _move_real_stick_to_joystick_pos():
+	cue_stick_pos = displayCueStickHitterPositon.global_transform
 	cueStick.global_transform = displayCueStickHitterPositon.global_transform
