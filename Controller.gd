@@ -18,6 +18,9 @@ func get_x_axis(sensitivity = CONTROLLER_AXIS_DEADZONE) -> float:
 func get_y_axis(sensitivity = CONTROLLER_AXIS_DEADZONE) -> float:
 	return  _get_axis(Y_AXIS, sensitivity)
 
+func get_raw_y_axis() -> float:
+	return  get_joystick_axis(Y_AXIS)
+
 func get_controller_vector() -> Vector2:
 	return Vector2(get_x_axis(), get_y_axis())
 
