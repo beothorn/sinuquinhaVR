@@ -2,6 +2,7 @@
 
 [ext_resource path="res://Game.gd" type="Script" id=1]
 [ext_resource path="res://Controller.gd" type="Script" id=2]
+[ext_resource path="res://cueStickTransparent.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/testPoolRoom/testPoolRoom.fbx" type="PackedScene" id=4]
 [ext_resource path="res://assets/Oculus Touch for Quest 2/right_joy.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/Oculus Touch for Quest 2/left_joy.tscn" type="PackedScene" id=6]
@@ -10,17 +11,15 @@
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0, 0, 0, 1 )
 
+[sub_resource type="CylinderShape" id=16]
+radius = 0.0109022
+height = 1.54559
+
 [sub_resource type="BoxShape" id=2]
 extents = Vector3( 1.08249, 0.965757, 0.806488 )
 
-[sub_resource type="BoxShape" id=3]
-extents = Vector3( 1.41262, 0.287275, 0.0821035 )
-
-[sub_resource type="BoxShape" id=4]
-extents = Vector3( 0.0509389, 0.336717, 1 )
-
-[sub_resource type="BoxShape" id=5]
-extents = Vector3( 0.124161, 1, 0.52254 )
+[sub_resource type="BoxShape" id=18]
+extents = Vector3( 0.0886674, 0.110912, 1 )
 
 [sub_resource type="CylinderShape" id=6]
 radius = 0.0184151
@@ -68,13 +67,11 @@ albedo_color = Color( 0.113725, 0, 0.898039, 1 )
 [sub_resource type="SpatialMaterial" id=13]
 albedo_color = Color( 0.0470588, 0.447059, 0, 1 )
 
-[sub_resource type="ProceduralSky" id=14]
-sky_energy = 1.26
-ground_bottom_color = Color( 0.211765, 0.156863, 0.2, 1 )
+[sub_resource type="ProceduralSky" id=17]
 
 [sub_resource type="Environment" id=15]
 background_mode = 2
-background_sky = SubResource( 14 )
+background_sky = SubResource( 17 )
 background_color = Color( 1, 1, 1, 1 )
 
 [node name="Game" type="Spatial"]
@@ -94,6 +91,7 @@ transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.22
 [node name="VRCamera" type="ARVRCamera" parent="VRPlayer"]
 
 [node name="LeftController" type="ARVRController" parent="VRPlayer"]
+visible = false
 script = ExtResource( 2 )
 
 [node name="leftJoy" parent="VRPlayer/LeftController" instance=ExtResource( 6 )]
@@ -105,12 +103,13 @@ script = ExtResource( 2 )
 
 [node name="rightJoy" parent="VRPlayer/RightController" instance=ExtResource( 5 )]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
+visible = false
 
 [node name="CueStickModel" parent="VRPlayer/RightController" instance=ExtResource( 7 )]
 transform = Transform( 0.878237, -0.184714, 0.441113, -0.216965, 0.668105, 0.711731, -0.426177, -0.720775, 0.546678, 0.287943, -1.02112, 1.15157 )
 
 [node name="hitterPosition" type="CSGCylinder" parent="VRPlayer/RightController"]
-transform = Transform( 0.949916, -0.185489, 0.251503, -0.0668408, 0.665576, 0.743331, -0.305274, -0.722913, 0.619843, 0.0245787, -0.0727062, 0.126477 )
+transform = Transform( 0.949916, -0.185489, 0.251503, -0.0668408, 0.665576, 0.743331, -0.305274, -0.722913, 0.619843, 0.0372834, -0.0674395, 0.129184 )
 visible = false
 radius = 0.0133578
 height = 0.368617
@@ -121,40 +120,64 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00522995, 0.0439405, 0.0042
 radius = 0.00547181
 material = SubResource( 1 )
 
+[node name="CueStickModelTransparent" parent="VRPlayer/RightController" instance=ExtResource( 3 )]
+transform = Transform( 0.878237, -0.184714, 0.441113, -0.216964, 0.668105, 0.711732, -0.426177, -0.720775, 0.546678, 0.288, -1.021, 1.152 )
+visible = false
+
+[node name="Area" type="Area" parent="VRPlayer/RightController"]
+collision_layer = 4
+collision_mask = 3
+
+[node name="CollisionShape" type="CollisionShape" parent="VRPlayer/RightController/Area"]
+transform = Transform( 0.96503, -0.192544, 0.177886, -0.00519256, 0.664422, 0.74734, -0.262087, -0.722129, 0.640187, 0.147147, -0.483706, 0.572933 )
+shape = SubResource( 16 )
+
 [node name="PoolTable" type="StaticBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0040558 )
+collision_mask = 3
 
 [node name="CollisionShape" type="CollisionShape" parent="PoolTable"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.102253, 0, 0 )
 shape = SubResource( 2 )
 
-[node name="side2" type="CollisionShape" parent="PoolTable"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0072, -0.74455 )
-shape = SubResource( 3 )
-
-[node name="side" type="CollisionShape" parent="PoolTable"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.03161, 0.757261 )
-shape = SubResource( 3 )
-
-[node name="front2" type="CollisionShape" parent="PoolTable"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.16175, 1.0995, 0 )
-shape = SubResource( 4 )
-
-[node name="front" type="CollisionShape" parent="PoolTable"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.39398, 1.09902, 0 )
-shape = SubResource( 4 )
+[node name="CSGBox" type="CSGBox" parent="PoolTable/CollisionShape"]
 
 [node name="CollisionShape2" type="CollisionShape" parent="PoolTable"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.30075, 0, 0 )
-shape = SubResource( 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.940996, 1.14825, 0 )
+shape = SubResource( 18 )
+
+[node name="CSGBox" type="CSGBox" parent="PoolTable/CollisionShape2"]
+width = 0.183011
+height = 0.235365
 
 [node name="CollisionShape3" type="CollisionShape" parent="PoolTable"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.10338, 0, 0 )
-shape = SubResource( 5 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.13858, 1.14825, 0 )
+shape = SubResource( 18 )
+
+[node name="CSGBox" type="CSGBox" parent="PoolTable/CollisionShape3"]
+width = 0.183011
+height = 0.235365
+
+[node name="CollisionShape4" type="CollisionShape" parent="PoolTable"]
+transform = Transform( -4.37114e-08, -4.37114e-08, -1, 4.37114e-08, 1, -4.37114e-08, 1, -4.37114e-08, -4.37114e-08, -0.0858085, 1.14825, 0.999511 )
+shape = SubResource( 18 )
+
+[node name="CSGBox" type="CSGBox" parent="PoolTable/CollisionShape4"]
+width = 0.183011
+height = 0.235365
+
+[node name="CollisionShape5" type="CollisionShape" parent="PoolTable"]
+transform = Transform( -4.37114e-08, -4.37114e-08, -1, 4.37114e-08, 1, -4.37114e-08, 1, -4.37114e-08, -4.37114e-08, -0.0858085, 1.14825, -1.04415 )
+shape = SubResource( 18 )
+
+[node name="CSGBox" type="CSGBox" parent="PoolTable/CollisionShape5"]
+width = 0.183011
+height = 0.235365
 
 [node name="CueStick" type="RigidBody" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.229113, -2.01364 )
-collision_layer = 2
+visible = false
+collision_layer = 4
 collision_mask = 2
 custom_integrator = true
 contacts_reported = 1
@@ -168,8 +191,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.40991, 0 )
 
 [node name="WhiteBall" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.58536, -0.0593269 )
-collision_layer = 3
-collision_mask = 3
+collision_layer = 2
+collision_mask = 7
 
 [node name="CueBall" type="CSGSphere" parent="WhiteBall"]
 radius = 0.0369378
@@ -181,6 +204,7 @@ shape = SubResource( 9 )
 
 [node name="Ball" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.01804, 0.392794 )
+collision_mask = 3
 
 [node name="CueBall" type="CSGSphere" parent="Ball"]
 radius = 0.0369378
@@ -192,6 +216,7 @@ shape = SubResource( 9 )
 
 [node name="Ball2" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.327637, 2.01804, 0.392794 )
+collision_mask = 3
 
 [node name="CueBall" type="CSGSphere" parent="Ball2"]
 radius = 0.0369378
@@ -203,6 +228,7 @@ shape = SubResource( 9 )
 
 [node name="Ball3" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.749367, 2.01804, -0.0390908 )
+collision_mask = 3
 
 [node name="CueBall" type="CSGSphere" parent="Ball3"]
 radius = 0.0369378
@@ -214,6 +240,7 @@ shape = SubResource( 9 )
 
 [node name="Ball4" type="RigidBody" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.244476, 2.01804, 0.185252 )
+collision_mask = 3
 
 [node name="CueBall" type="CSGSphere" parent="Ball4"]
 radius = 0.0369378

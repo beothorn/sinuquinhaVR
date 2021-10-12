@@ -15,7 +15,10 @@ onready var left_controller: QuestContorller = $VRPlayer/LeftController
 onready var right_controller: QuestContorller = $VRPlayer/RightController
 onready var cueStick: RigidBody = $CueStick
 onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
+onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
 onready var displayCueStickHitterPositon: CSGCylinder = $VRPlayer/RightController/hitterPosition
+
+onready var test: Area = $VRPlayer/RightController/Area
 
 export(bool) var debug = false
 
@@ -52,6 +55,14 @@ func _process_left_controller_input(delta: float):
 	_move_player(delta, left_controller.get_movement_vector())
 	
 func _process_right_controller_input(delta: float):
+	var bodies: Array = test.get_overlapping_bodies()
+	if bodies.size() > 0 and not aiming_mode:
+		displayCueStickTransparent.visible = true
+		displayCueStick.visible = false
+		return
+	
+	displayCueStickTransparent.visible = false
+	
 	var was_aiming_mode = aiming_mode
 	aiming_mode =  right_controller.is_trigger_pressed() 
 	if after_hit:
