@@ -2,7 +2,6 @@ extends Spatial
 
 class_name Game
 
-
 const DEBOUNCE_ROTATION_TIME = 0.33
 const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
@@ -18,18 +17,20 @@ onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
 onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
 onready var displayCueStickHitterPositon: CSGCylinder = $VRPlayer/RightController/hitterPosition
 
-onready var test: Area = $VRPlayer/RightController/Area
+onready var cuestickArea: Area = $VRPlayer/RightController/Area
 
 export(bool) var debug = false
 
 var aiming_mode = false
 var after_hit = false
-var after_throw = false # TODO: This should be aiming mode
-var pulled_down = false
+var after_throw = false
+var pulled_joystick_down = false
 var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 var cue_stick_pos: Transform
 var last_joy_axis_measurement = 99
 var last_joy_axis_speed = 0
+
+var auto_shoot_count = 0
 
 func _ready():
 	_initialize_vr()
@@ -48,6 +49,12 @@ func _initialize_vr():
 				get_viewport().arvr = true
 
 func _physics_process(delta: float):
+	auto_shoot_count += delta
+	if auto_shoot_count > 3:
+		var cue_stick2_y_axis = $CueStick2.transform.basis.y.normalized()
+		$CueStick2.apply_central_impulse( cue_stick2_y_axis * 28 )
+		auto_shoot_count = -9999
+		
 	_process_left_controller_input(delta)
 	_process_right_controller_input(delta)
 
@@ -55,8 +62,10 @@ func _process_left_controller_input(delta: float):
 	_move_player(delta, left_controller.get_movement_vector())
 	
 func _process_right_controller_input(delta: float):
-	var bodies: Array = test.get_overlapping_bodies()
-	if bodies.size() > 0 and not aiming_mode:
+	_rotate_camera(right_controller.get_x_axis(), delta)
+	
+	var bodiesCollidingWithCuestick: Array = cuestickArea.get_overlapping_bodies()
+	if bodiesCollidingWithCuestick.size() > 0 and not aiming_mode:
 		displayCueStickTransparent.visible = true
 		displayCueStick.visible = false
 		return
@@ -66,10 +75,10 @@ func _process_right_controller_input(delta: float):
 	var was_aiming_mode = aiming_mode
 	aiming_mode =  right_controller.is_trigger_pressed() 
 	if after_hit:
-		if not aiming_mode:
-			after_hit = false
-		else:
+		if aiming_mode:
 			return
+		else:
+			after_hit = false
 	cueStick.visible = aiming_mode
 	displayCueStick.visible = ! aiming_mode
 	var current_y_axis = right_controller.get_y_axis()
@@ -81,17 +90,16 @@ func _process_right_controller_input(delta: float):
 	
 	if aiming_mode:
 		_aim(right_controller.get_raw_y_axis(), delta)
-		
+
+func _rotate_camera(axis: float, delta: float):
 	if(deboucing_rotation_time_counter < DEBOUNCE_ROTATION_TIME):
 		deboucing_rotation_time_counter += delta
 	else:
-		var x = right_controller.get_x_axis()
-		
-		if(x > 0.0):
+		if(axis > 0.0):
 			vr_player.rotate_y(-PLAYER_ROTATION_ANGLE)
 			deboucing_rotation_time_counter = 0
 			
-		if(x < 0.0):
+		if(axis < 0.0):
 			vr_player.rotate_y(PLAYER_ROTATION_ANGLE)
 			deboucing_rotation_time_counter = 0
 
@@ -99,14 +107,10 @@ func _aim(current_joy_axis: float, delta: float):
 	if after_throw:
 		return
 	var cue_stick_y_axis = cueStick.transform.basis.y.normalized()
-	print("================")
-	print(pulled_down)
-	print(current_joy_axis)
-	print("================")
 	if current_joy_axis < CUE_STICK_RELEASE_POINT:
-		pulled_down = true
+		pulled_joystick_down = true
 	if current_joy_axis >= -0.000001 :
-		if pulled_down:
+		if pulled_joystick_down:
 			var current_speed = (current_joy_axis - last_joy_axis_measurement) / delta
 			# line from (last_joy_axis_measurement, last_joy_axis_speed) to (current_joy_axis, current_speed)
 			# need to find where it intersects CUE_STICK_RELEASE_POINT
@@ -133,7 +137,7 @@ func _aim(current_joy_axis: float, delta: float):
 			if release_speed > max_joy_speed:
 				release_speed = max_joy_speed
 			
-			var cue_stick_max_impulse = 20
+			var cue_stick_max_impulse = 30
 			
 			var impulse_factor = (release_speed / max_joy_speed)
 			# we want weak to e very weak and strong to be very strong, it is not a linear relation
@@ -149,7 +153,7 @@ func _aim(current_joy_axis: float, delta: float):
 			#print("================")
 			cueStick.apply_central_impulse( apply_force )
 			after_throw = true
-			pulled_down = false
+			pulled_joystick_down = false
 	else:
 		cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_joy_axis * CUE_STICK_BACK_SIZE )
 		cueStick.sleeping = true
@@ -175,6 +179,7 @@ func _move_real_stick_to_joystick_pos():
 
 
 func _on_CueStick_body_entered(body):
+	$CueStick2.queue_free()
 	after_hit = true
 	cueStick.visible = false
 	cueStick.sleeping = true
