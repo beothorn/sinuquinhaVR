@@ -52,7 +52,7 @@ func _physics_process(delta: float):
 	auto_shoot_count += delta
 	if auto_shoot_count > 3:
 		var cue_stick2_y_axis = $CueStick2.transform.basis.y.normalized()
-		$CueStick2.apply_central_impulse( cue_stick2_y_axis * 28 )
+		$CueStick2.apply_central_impulse( cue_stick2_y_axis * 30 )
 		auto_shoot_count = -9999
 		
 	_process_left_controller_input(delta)
