@@ -52,8 +52,20 @@ config/icon="res://icon.png"
 
 singletons=[ "res://addons/godot_ovrmobile/godot_ovrmobile.gdnlib" ]
 
+[global]
+
+layers=false
+
+[layer_names]
+
+3d_physics/layer_1="Table"
+3d_physics/layer_2="Balls"
+3d_physics/layer_3="WhiteBall"
+3d_physics/layer_4="Stick"
+
 [physics]
 
+common/physics_fps=120
 common/enable_pause_aware_picking=true
 
 [rendering]

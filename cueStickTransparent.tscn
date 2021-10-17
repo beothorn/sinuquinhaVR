@@ -3,7 +3,7 @@
 [ext_resource path="res://assets/cueStick/cueStick.fbx" type="PackedScene" id=1]
 
 [sub_resource type="SpatialMaterial" id=1]
-albedo_color = Color( 1, 0, 0.913725, 1 )
+albedo_color = Color( 0.0745098, 0, 0, 1 )
 
 [sub_resource type="SpatialMaterial" id=2]
 flags_transparent = true

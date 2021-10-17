@@ -7,15 +7,16 @@ const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
 const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
+const CUE_STICK_MAX_IMPULSE = 1
 
 onready var vr_player = $VRPlayer
 onready var vr_camera = $VRPlayer/VRCamera
 onready var left_controller: QuestContorller = $VRPlayer/LeftController
 onready var right_controller: QuestContorller = $VRPlayer/RightController
 onready var cueStick: RigidBody = $CueStick
-onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
-onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
-onready var displayCueStickHitterPositon: CSGCylinder = $VRPlayer/RightController/hitterPosition
+onready var displayCueStick: Spatial = $VRPlayer/RightController/hitterPosition/CueStickModel
+onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/hitterPosition/CueStickModelTransparent
+onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hitterPosition
 
 onready var cuestickArea: Area = $VRPlayer/RightController/Area
 
@@ -37,23 +38,26 @@ func _ready():
 
 func _initialize_vr():
 	if not debug:
+		$CueStick2.queue_free()
 		var ovr_init_config_pre = preload("res://addons/godot_ovrmobile/OvrInitConfig.gdns")
 		var ovr_performance_pre = preload("res://addons/godot_ovrmobile/OvrPerformance.gdns")
 		
 		var ovr_init_config = ovr_init_config_pre.new()
 		var ovr_performance = ovr_performance_pre.new()
 		var interface = ARVRServer.find_interface("OVRMobile")
+		ARVRServer.world_scale = 1.39
 		if interface:
 			ovr_init_config.set_render_target_size_multiplier(1)
 			if interface.initialize():
 				get_viewport().arvr = true
 
 func _physics_process(delta: float):
-	auto_shoot_count += delta
-	if auto_shoot_count > 3:
-		var cue_stick2_y_axis = $CueStick2.transform.basis.y.normalized()
-		$CueStick2.apply_central_impulse( cue_stick2_y_axis * 30 )
-		auto_shoot_count = -9999
+	if debug:
+		auto_shoot_count += delta
+		if auto_shoot_count > 3:
+			var cue_stick2_y_axis = $CueStick2.transform.basis.y.normalized()
+			$CueStick2.apply_central_impulse( cue_stick2_y_axis * 0.5 )
+			auto_shoot_count = -9999
 		
 	_process_left_controller_input(delta)
 	_process_right_controller_input(delta)
@@ -137,12 +141,12 @@ func _aim(current_joy_axis: float, delta: float):
 			if release_speed > max_joy_speed:
 				release_speed = max_joy_speed
 			
-			var cue_stick_max_impulse = 30
+			
 			
 			var impulse_factor = (release_speed / max_joy_speed)
 			# we want weak to e very weak and strong to be very strong, it is not a linear relation
 			var impulse_with_ease = ease(impulse_factor, -1.8) # see https://github.com/godotengine/godot/issues/10572
-			var impulse_to_apply = (impulse_with_ease * cue_stick_max_impulse)
+			var impulse_to_apply = (impulse_with_ease * CUE_STICK_MAX_IMPULSE)
 			var apply_force = cue_stick_y_axis * impulse_to_apply
 			#print("================")
 			#print(release_speed)
@@ -179,7 +183,8 @@ func _move_real_stick_to_joystick_pos():
 
 
 func _on_CueStick_body_entered(body):
-	$CueStick2.queue_free()
+	if debug:
+		$CueStick2.queue_free()
 	after_hit = true
 	cueStick.visible = false
 	cueStick.sleeping = true
