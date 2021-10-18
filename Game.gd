@@ -56,7 +56,7 @@ func _physics_process(delta: float):
 		auto_shoot_count += delta
 		if auto_shoot_count > 3:
 			var cue_stick2_y_axis = $CueStick2.transform.basis.y.normalized()
-			$CueStick2.apply_central_impulse( cue_stick2_y_axis * 0.5 )
+			$CueStick2.apply_central_impulse( cue_stick2_y_axis * CUE_STICK_MAX_IMPULSE )
 			auto_shoot_count = -9999
 		
 	_process_left_controller_input(delta)
@@ -185,6 +185,7 @@ func _move_real_stick_to_joystick_pos():
 func _on_CueStick_body_entered(body):
 	if debug:
 		$CueStick2.queue_free()
+	
 	after_hit = true
 	cueStick.visible = false
 	cueStick.sleeping = true
