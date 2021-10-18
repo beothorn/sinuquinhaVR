@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=2]
+[gd_scene load_steps=32 format=2]
 
 [ext_resource path="res://Game.gd" type="Script" id=1]
 [ext_resource path="res://Controller.gd" type="Script" id=2]
@@ -15,18 +15,6 @@
 [sub_resource type="CylinderShape" id=1]
 radius = 0.0109022
 height = 1.54559
-
-[sub_resource type="PhysicsMaterial" id=25]
-bounce = 1.0
-
-[sub_resource type="SphereShape" id=2]
-radius = 0.0452126
-
-[sub_resource type="PhysicsMaterial" id=3]
-bounce = 1.0
-
-[sub_resource type="SphereShape" id=24]
-radius = 0.00917406
 
 [sub_resource type="PhysicsMaterial" id=5]
 
@@ -174,23 +162,28 @@ transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0, -0.096
 script = ExtResource( 2 )
 
 [node name="leftJoy" parent="VRPlayer/LeftController" instance=ExtResource( 6 )]
-transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
 
 [node name="RightController" type="ARVRController" parent="VRPlayer"]
 controller_id = 2
 script = ExtResource( 2 )
 
 [node name="rightJoy" parent="VRPlayer/RightController" instance=ExtResource( 5 )]
-transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0 )
+transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+
+[node name="CueStickModel" parent="VRPlayer/RightController" instance=ExtResource( 7 )]
+transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737952, -0.300278, -0.718243, 0.627662, 0.287777, -1.02172, 1.14994 )
+
+[node name="CueStickModelTransparent" parent="VRPlayer/RightController" instance=ExtResource( 3 )]
+transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.287777, -1.02172, 1.14994 )
 
 [node name="hitterPosition" type="Spatial" parent="VRPlayer/RightController"]
-transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.134649, -0.454062, 0.543025 )
+transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.0113473, -0.0127778, 0.0704517 )
 
-[node name="CueStickModel" parent="VRPlayer/RightController/hitterPosition" instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0.999999, 0, -0.845, 0 )
-
-[node name="CueStickModelTransparent" parent="VRPlayer/RightController/hitterPosition" instance=ExtResource( 3 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.845, 0 )
+[node name="CSGSphere" type="CSGSphere" parent="VRPlayer/RightController/hitterPosition"]
+transform = Transform( 1, -2.98023e-08, 0, -2.98023e-08, 1, 4.09782e-08, -2.98023e-08, 0, 1, 0.00423449, -0.000806309, 0.00110312 )
+visible = false
+radius = 0.0135263
 
 [node name="Area" type="Area" parent="VRPlayer/RightController"]
 collision_layer = 4
@@ -199,42 +192,6 @@ collision_mask = 3
 [node name="CollisionShape" type="CollisionShape" parent="VRPlayer/RightController/Area"]
 transform = Transform( 0.96503, -0.192544, 0.177886, -0.00519256, 0.664422, 0.74734, -0.262087, -0.722129, 0.640187, 0.147147, -0.483706, 0.572933 )
 shape = SubResource( 1 )
-
-[node name="CueStick" type="RigidBody" parent="."]
-transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.229113, -2.01364 )
-collision_layer = 4
-collision_mask = 2
-mass = 0.0571429
-physics_material_override = SubResource( 25 )
-custom_integrator = true
-continuous_cd = true
-contacts_reported = 1
-contact_monitor = true
-
-[node name="CollisionShape" type="CollisionShape" parent="CueStick"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.624665, 0 )
-shape = SubResource( 2 )
-
-[node name="model" parent="CueStick" instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.845, 0 )
-
-[node name="CueStick2" type="RigidBody" parent="."]
-transform = Transform( -0.00251237, 0.999648, 0.0264042, 6.62706e-05, -0.0264035, 0.999651, 0.999997, 0.00251324, 8.75324e-08, -0.948756, 1.04079, 0.000262901 )
-collision_layer = 4
-collision_mask = 2
-mass = 0.0571429
-physics_material_override = SubResource( 3 )
-custom_integrator = true
-continuous_cd = true
-contacts_reported = 1
-contact_monitor = true
-
-[node name="CollisionShape" type="CollisionShape" parent="CueStick2"]
-transform = Transform( 1, 4.65661e-10, -4.24762e-11, 6.98492e-10, 1, -1.46814e-08, -1.02084e-10, -1.46798e-08, 1, -0.00045438, 0.180796, 0.000682354 )
-shape = SubResource( 24 )
-
-[node name="model" parent="CueStick2" instance=ExtResource( 7 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.40991, 0 )
 
 [node name="PoolTable" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.864918, 0 )
@@ -485,6 +442,3 @@ shape = SubResource( 23 )
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.552273, -0.823592, 0.129191, -0.487323, -0.193202, 0.851581, -0.676395, -0.533263, -0.508056, 0, 4.12346, 0 )
 shadow_bias = -0.04
-
-[connection signal="body_entered" from="CueStick" to="." method="_on_CueStick_body_entered"]
-[connection signal="body_entered" from="CueStick2" to="." method="_on_CueStick_body_entered"]

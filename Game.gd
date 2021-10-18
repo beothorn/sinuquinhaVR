@@ -2,6 +2,8 @@ extends Spatial
 
 class_name Game
 
+const WORLD_SCALE = 1.39
+
 const DEBOUNCE_ROTATION_TIME = 0.33
 const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
@@ -13,10 +15,12 @@ onready var vr_player = $VRPlayer
 onready var vr_camera = $VRPlayer/VRCamera
 onready var left_controller: QuestContorller = $VRPlayer/LeftController
 onready var right_controller: QuestContorller = $VRPlayer/RightController
-onready var cueStick: RigidBody = $CueStick
-onready var displayCueStick: Spatial = $VRPlayer/RightController/hitterPosition/CueStickModel
-onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/hitterPosition/CueStickModelTransparent
+onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
+onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
 onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hitterPosition
+
+onready var cue_stick_rigid_body = preload("res://CueStickRigidBody.tscn")
+onready var cue_stick_model = preload("res://assets/cueStick/cueStick.fbx")
 
 onready var cuestickArea: Area = $VRPlayer/RightController/Area
 
@@ -30,6 +34,8 @@ var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 var cue_stick_pos: Transform
 var last_joy_axis_measurement = 99
 var last_joy_axis_speed = 0
+var current_cue_stick_rigid_body: RigidBody
+var cueStick: Spatial
 
 var auto_shoot_count = 0
 
@@ -38,26 +44,21 @@ func _ready():
 
 func _initialize_vr():
 	if not debug:
-		$CueStick2.queue_free()
 		var ovr_init_config_pre = preload("res://addons/godot_ovrmobile/OvrInitConfig.gdns")
 		var ovr_performance_pre = preload("res://addons/godot_ovrmobile/OvrPerformance.gdns")
 		
 		var ovr_init_config = ovr_init_config_pre.new()
 		var ovr_performance = ovr_performance_pre.new()
 		var interface = ARVRServer.find_interface("OVRMobile")
-		ARVRServer.world_scale = 1.39
+		ARVRServer.world_scale = WORLD_SCALE
+		$VRPlayer/LeftController/leftJoy.scale = Vector3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE)
+		$VRPlayer/RightController/rightJoy.scale = Vector3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE)
 		if interface:
 			ovr_init_config.set_render_target_size_multiplier(1)
 			if interface.initialize():
 				get_viewport().arvr = true
 
 func _physics_process(delta: float):
-	if debug:
-		auto_shoot_count += delta
-		if auto_shoot_count > 3:
-			var cue_stick2_y_axis = $CueStick2.transform.basis.y.normalized()
-			$CueStick2.apply_central_impulse( cue_stick2_y_axis * CUE_STICK_MAX_IMPULSE )
-			auto_shoot_count = -9999
 		
 	_process_left_controller_input(delta)
 	_process_right_controller_input(delta)
@@ -83,14 +84,13 @@ func _process_right_controller_input(delta: float):
 			return
 		else:
 			after_hit = false
-	cueStick.visible = aiming_mode
 	displayCueStick.visible = ! aiming_mode
 	var current_y_axis = right_controller.get_y_axis()
 	if aiming_mode and not was_aiming_mode:
 		after_throw = false
 		_move_real_stick_to_joystick_pos()
 	if not aiming_mode and was_aiming_mode:
-		cueStick.sleeping = true
+		_remove_aiming_cuestick()
 	
 	if aiming_mode:
 		_aim(right_controller.get_raw_y_axis(), delta)
@@ -110,7 +110,8 @@ func _rotate_camera(axis: float, delta: float):
 func _aim(current_joy_axis: float, delta: float):
 	if after_throw:
 		return
-	var cue_stick_y_axis = cueStick.transform.basis.y.normalized()
+	var cue_stick_y_axis = current_cue_stick_rigid_body.transform.basis.y.normalized()
+	cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_joy_axis * CUE_STICK_BACK_SIZE )
 	if current_joy_axis < CUE_STICK_RELEASE_POINT:
 		pulled_joystick_down = true
 	if current_joy_axis >= -0.000001 :
@@ -155,12 +156,10 @@ func _aim(current_joy_axis: float, delta: float):
 			#print(impulse_to_apply)
 			#print(apply_force)
 			#print("================")
-			cueStick.apply_central_impulse( apply_force )
+			current_cue_stick_rigid_body.apply_central_impulse( apply_force )
 			after_throw = true
 			pulled_joystick_down = false
-	else:
-		cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_joy_axis * CUE_STICK_BACK_SIZE )
-		cueStick.sleeping = true
+		
 	last_joy_axis_speed = (current_joy_axis - last_joy_axis_measurement) / delta
 	last_joy_axis_measurement = current_joy_axis
 
@@ -178,14 +177,20 @@ func _move_player(delta: float, movement_vector: Vector2):
 		vr_player.global_translate(movement_right + movement_forward)
 
 func _move_real_stick_to_joystick_pos():
-	cue_stick_pos = displayCueStickHitterPositon.global_transform
-	cueStick.global_transform = displayCueStickHitterPositon.global_transform
-
-
-func _on_CueStick_body_entered(body):
-	if debug:
-		$CueStick2.queue_free()
+	current_cue_stick_rigid_body = cue_stick_rigid_body.instance()
+	current_cue_stick_rigid_body.global_transform = displayCueStickHitterPositon.global_transform
+	add_child(current_cue_stick_rigid_body)
+	current_cue_stick_rigid_body.connect("body_entered", self, " _on_CueStick_body_entered")
 	
+	cueStick = cue_stick_model.instance()
+	cueStick.global_transform = displayCueStick.global_transform
+	cue_stick_pos = displayCueStick.global_transform
+	add_child(cueStick)
+	
+func _on_CueStick_body_entered(body):	
 	after_hit = true
-	cueStick.visible = false
-	cueStick.sleeping = true
+	_remove_aiming_cuestick()
+
+func _remove_aiming_cuestick():
+	current_cue_stick_rigid_body.queue_free()
+	cueStick.queue_free()
