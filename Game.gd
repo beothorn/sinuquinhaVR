@@ -20,9 +20,10 @@ onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueS
 onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hitterPosition
 
 onready var cue_stick_rigid_body = preload("res://CueStickRigidBody.tscn")
+onready var white_ball_gen = preload("res://WhiteBallRigidBody.tscn")
 onready var cue_stick_model = preload("res://assets/cueStick/cueStick.fbx")
 
-onready var cuestickArea: Area = $VRPlayer/RightController/Area
+onready var cueStickCollisionDetector: Area = $VRPlayer/RightController/CueStickCollisionDetector
 
 export(bool) var debug = false
 
@@ -41,6 +42,7 @@ var auto_shoot_count = 0
 
 func _ready():
 	_initialize_vr()
+	_readd_white_ball()
 
 func _initialize_vr():
 	if not debug:
@@ -69,7 +71,7 @@ func _process_left_controller_input(delta: float):
 func _process_right_controller_input(delta: float):
 	_rotate_camera(right_controller.get_x_axis(), delta)
 	
-	var bodiesCollidingWithCuestick: Array = cuestickArea.get_overlapping_bodies()
+	var bodiesCollidingWithCuestick: Array = cueStickCollisionDetector.get_overlapping_bodies()
 	if bodiesCollidingWithCuestick.size() > 0 and not aiming_mode:
 		displayCueStickTransparent.visible = true
 		displayCueStick.visible = false
@@ -194,3 +196,11 @@ func _on_CueStick_body_entered(body):
 func _remove_aiming_cuestick():
 	current_cue_stick_rigid_body.queue_free()
 	cueStick.queue_free()
+
+func _readd_white_ball():
+	var white_ball = white_ball_gen.instance()
+	$Balls.add_child(white_ball)
+	white_ball.transform.origin = Vector3(-0.676, 1.024, 0.008)
+
+func _on_Ground_body_entered(body):
+	_readd_white_ball()
