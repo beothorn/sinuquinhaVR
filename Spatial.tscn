@@ -157,14 +157,6 @@ transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.7379
 [node name="hitterPosition" type="Spatial" parent="VRPlayer/RightController"]
 transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.0113473, -0.0127778, 0.0704517 )
 
-[node name="CSGSphere" type="CSGSphere" parent="VRPlayer/RightController/hitterPosition"]
-transform = Transform( 1, -2.98023e-08, 0, -2.98023e-08, 1, 4.09782e-08, -2.98023e-08, 0, 1, 0.00423449, -0.000806309, 0.00110312 )
-visible = false
-radius = 0.0135263
-
-[node name="Area" type="Area" parent="VRPlayer/RightController"]
-collision_layer = 4
-collision_mask = 3
 [node name="CueStickCollisionDetector" type="Area" parent="VRPlayer/RightController"]
 collision_layer = 7
 collision_mask = 7
