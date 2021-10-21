@@ -21,6 +21,7 @@ onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hi
 
 onready var cue_stick_rigid_body = preload("res://CueStickRigidBody.tscn")
 onready var white_ball_gen = preload("res://WhiteBallRigidBody.tscn")
+onready var ball_gen = preload("res://BallRigidBody.tscn")
 onready var cue_stick_model = preload("res://assets/cueStick/cueStick.fbx")
 
 onready var cueStickCollisionDetector: Area = $VRPlayer/RightController/CueStickCollisionDetector
@@ -43,6 +44,11 @@ var auto_shoot_count = 0
 func _ready():
 	_initialize_vr()
 	_readd_white_ball()
+	
+	_add_ball(Vector3(-2.448, 1.024, -1.157), 1)
+	_add_ball(Vector3(0.868, 1.024, 0.687), 2)
+	_add_ball(Vector3(0.665, 1.024, -0.083), 11)
+	_add_ball(Vector3(2.414, 1.024, 1.143), 15)
 
 func _initialize_vr():
 	if not debug:
@@ -201,6 +207,12 @@ func _readd_white_ball():
 	var white_ball = white_ball_gen.instance()
 	$Balls.add_child(white_ball)
 	white_ball.transform.origin = Vector3(-0.676, 1.024, 0.008)
+	
+func _add_ball(pos: Vector3, ball_number: int):
+	var ball = ball_gen.instance()
+	ball.change_ball(ball_number)
+	$Balls.add_child(ball)
+	ball.transform.origin = pos
 
 func _on_Ground_body_entered(body):
 	_readd_white_ball()
