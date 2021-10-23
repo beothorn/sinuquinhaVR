@@ -9,7 +9,48 @@ const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
 const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
-const CUE_STICK_MAX_IMPULSE = 1
+const CUE_STICK_MAX_IMPULSE = 0.8
+
+const BALLS_Y = 1.024
+const TABLE_INITIAL_SETUP = {
+	"white_ball": {
+		"x": -0.676,
+		"z": 0.008
+	},
+	"balls": [
+		{
+			"number": 1,
+			"pos": {
+				"x": -2.448,
+				"z": 0.008	
+			}
+		},
+		{
+			"number": 2,
+			"pos": {
+				"x": 0.868,
+				"z": 0.687
+			}
+		},
+		{
+			"number": 11,
+			"pos": {
+				"x": 0.665,
+				"z": -0.083
+			}
+		},
+		{
+			"number": 15,
+			"pos": {
+				"x": 2.414,
+				"z": 1.143
+			}
+		}
+	]
+}
+
+var current_white_ball
+var saved_table = TABLE_INITIAL_SETUP
 
 onready var vr_player = $VRPlayer
 onready var vr_camera = $VRPlayer/VRCamera
@@ -43,12 +84,7 @@ var auto_shoot_count = 0
 
 func _ready():
 	_initialize_vr()
-	_readd_white_ball()
-	
-	_add_ball(Vector3(-2.448, 1.024, -1.157), 1)
-	_add_ball(Vector3(0.868, 1.024, 0.687), 2)
-	_add_ball(Vector3(0.665, 1.024, -0.083), 11)
-	_add_ball(Vector3(2.414, 1.024, 1.143), 15)
+	_reset_table()
 
 func _initialize_vr():
 	if not debug:
@@ -65,6 +101,10 @@ func _initialize_vr():
 			ovr_init_config.set_render_target_size_multiplier(1)
 			if interface.initialize():
 				get_viewport().arvr = true
+		
+		$VRPlayer/RightController.connect("on_by_pressed", self, "_reset_table")
+		$VRPlayer/LeftController.connect("on_ax_pressed", self, "_save_table")
+		$VRPlayer/LeftController.connect("on_by_pressed", self, "_load_saved_table")
 
 func _physics_process(delta: float):
 		
@@ -203,16 +243,50 @@ func _remove_aiming_cuestick():
 	current_cue_stick_rigid_body.queue_free()
 	cueStick.queue_free()
 
-func _readd_white_ball():
-	var white_ball = white_ball_gen.instance()
-	$Balls.add_child(white_ball)
-	white_ball.transform.origin = Vector3(-0.676, 1.024, 0.008)
+func _readd_white_ball(pos: Vector3 = Vector3(-0.676, 1.024, 0.008)):
+	current_white_ball = white_ball_gen.instance()
+	$WhiteBall.add_child(current_white_ball)
+	current_white_ball.transform.origin = pos
 	
 func _add_ball(pos: Vector3, ball_number: int):
 	var ball = ball_gen.instance()
 	ball.change_ball(ball_number)
 	$Balls.add_child(ball)
 	ball.transform.origin = pos
+
+func _load_table_state(table_state):
+	for ball in $Balls.get_children():
+		ball.queue_free()
+	for ball in $WhiteBall.get_children():
+		ball.queue_free()
+	_readd_white_ball(Vector3(table_state.white_ball.x, BALLS_Y, table_state.white_ball.z))
+	for ball_data in table_state.balls:
+		_add_ball(Vector3(ball_data.pos.x, BALLS_Y, ball_data.pos.z), ball_data.number)
+
+func _reset_table():
+	_load_table_state(TABLE_INITIAL_SETUP)
+
+func _save_table():
+	var new_saved_state = {
+		"white_ball": {
+			"x": current_white_ball.transform.origin.x,
+			"z": current_white_ball.transform.origin.z
+		},
+		"balls": []
+	}
+	for ball in $Balls.get_children():
+		new_saved_state.balls.append({
+			"number": ball.get_ball_number(),
+			"pos": {
+				"x": ball.transform.origin.x,
+				"z": ball.transform.origin.z
+			}
+		})
+	saved_table = new_saved_state
+	
+
+func _load_saved_table():
+	_load_table_state(saved_table)
 
 func _on_Ground_body_entered(body):
 	_readd_white_ball()
