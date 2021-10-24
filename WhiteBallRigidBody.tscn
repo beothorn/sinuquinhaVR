@@ -1,36 +1,13 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://resources/ballPhysics.tres" type="PhysicsMaterial" id=1]
-
-[sub_resource type="VisualShader" id=1]
-code = "shader_type spatial;
-render_mode specular_schlick_ggx;
-
-
-
-
-void vertex() {
-// Output:0
-
-}
-
-void fragment() {
-// Output:0
-
-}
-
-void light() {
-// Output:0
-
-}
-"
-graph_offset = Vector2( 35, 60 )
-
-[sub_resource type="ShaderMaterial" id=2]
-shader = SubResource( 1 )
+[ext_resource path="res://assets/ball.obj" type="ArrayMesh" id=2]
 
 [sub_resource type="SphereShape" id=3]
 radius = 0.0592816
+
+[sub_resource type="SpatialMaterial" id=4]
+albedo_color = Color( 0.956863, 0.960784, 0.890196, 1 )
 
 [node name="WhiteBall" type="RigidBody"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.675633, 1.02376, 0.00813487 )
@@ -41,9 +18,9 @@ physics_material_override = ExtResource( 1 )
 continuous_cd = true
 angular_damp = 2.7
 
-[node name="CueBall" type="CSGSphere" parent="."]
-radius = 0.057
-material = SubResource( 2 )
-
 [node name="CollisionShape" type="CollisionShape" parent="."]
 shape = SubResource( 3 )
+
+[node name="Model" type="MeshInstance" parent="."]
+mesh = ExtResource( 2 )
+material/0 = SubResource( 4 )

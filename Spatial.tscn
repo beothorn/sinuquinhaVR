@@ -127,7 +127,7 @@ visible = false
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10356, 0.0265717, 0.0262829 )
 
 [node name="VRPlayer" type="ARVROrigin" parent="."]
-transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0, -0.0969372, -0.473 )
+transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -2.17146, -0.0969372, -0.473 )
 
 [node name="VRCamera" type="ARVRCamera" parent="VRPlayer"]
 
@@ -151,7 +151,11 @@ transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.7379
 transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.287777, -1.02172, 1.14994 )
 
 [node name="hitterPosition" type="Spatial" parent="VRPlayer/RightController"]
-transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.0113473, -0.0127778, 0.0704517 )
+transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.0147882, -0.0127778, 0.0704517 )
+
+[node name="CSGSphere" type="CSGSphere" parent="VRPlayer/RightController/hitterPosition"]
+transform = Transform( 1, -2.98023e-08, 0, -2.98023e-08, 1, 4.09782e-08, -2.98023e-08, 0, 1, 0, 0, 0 )
+radius = 0.014
 
 [node name="CueStickCollisionDetector" type="Area" parent="VRPlayer/RightController"]
 collision_layer = 7

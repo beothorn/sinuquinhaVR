@@ -9,7 +9,7 @@ const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
 const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
-const CUE_STICK_MAX_IMPULSE = 0.8
+const CUE_STICK_MAX_IMPULSE = 0.7
 
 const BALLS_Y = 1.024
 const TABLE_INITIAL_SETUP = {
@@ -73,6 +73,7 @@ var aiming_mode = false
 var after_hit = false
 var after_throw = false
 var pulled_joystick_down = false
+var waiting_balls_to_stop = false
 var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 var cue_stick_pos: Transform
 var last_joy_axis_measurement = 99
@@ -107,7 +108,21 @@ func _initialize_vr():
 		$VRPlayer/LeftController.connect("on_by_pressed", self, "_load_saved_table")
 
 func _physics_process(delta: float):
-		
+	var balls_velocity = 0
+	for ball in $Balls.get_children():
+		balls_velocity = balls_velocity + ball.linear_velocity.length()
+	balls_velocity = balls_velocity / $Balls.get_children().size()
+	
+	for ball in $WhiteBall.get_children():
+		balls_velocity = balls_velocity + ball.linear_velocity.length()
+	balls_velocity = balls_velocity / $WhiteBall.get_children().size()
+	
+	if balls_velocity <= 0.1 and waiting_balls_to_stop:
+		_save_table()
+		_load_saved_table()
+		waiting_balls_to_stop = false
+		print(balls_velocity)
+	
 	_process_left_controller_input(delta)
 	_process_right_controller_input(delta)
 
@@ -225,10 +240,13 @@ func _move_player(delta: float, movement_vector: Vector2):
 		vr_player.global_translate(movement_right + movement_forward)
 
 func _move_real_stick_to_joystick_pos():
-	current_cue_stick_rigid_body = cue_stick_rigid_body.instance()
-	current_cue_stick_rigid_body.global_transform = displayCueStickHitterPositon.global_transform
-	add_child(current_cue_stick_rigid_body)
-	current_cue_stick_rigid_body.connect("body_entered", self, " _on_CueStick_body_entered")
+	var new_cue_stick_rigid_body: RigidBody = cue_stick_rigid_body.instance()
+	
+	new_cue_stick_rigid_body = cue_stick_rigid_body.instance()
+	new_cue_stick_rigid_body.global_transform = displayCueStickHitterPositon.global_transform
+	add_child(new_cue_stick_rigid_body)
+	new_cue_stick_rigid_body.connect("body_entered", self, " _on_CueStick_body_entered")
+	current_cue_stick_rigid_body = new_cue_stick_rigid_body
 	
 	cueStick = cue_stick_model.instance()
 	cueStick.global_transform = displayCueStick.global_transform
@@ -236,7 +254,9 @@ func _move_real_stick_to_joystick_pos():
 	add_child(cueStick)
 	
 func _on_CueStick_body_entered(body):	
+	print("HIT")
 	after_hit = true
+	waiting_balls_to_stop = true
 	_remove_aiming_cuestick()
 
 func _remove_aiming_cuestick():
