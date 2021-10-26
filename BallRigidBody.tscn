@@ -10,7 +10,8 @@ radius = 0.0592816
 [sub_resource type="SpatialMaterial" id=2]
 
 [node name="Ball" type="RigidBody"]
-collision_mask = 3
+collision_layer = 2
+collision_mask = 7
 mass = 0.0173469
 physics_material_override = ExtResource( 1 )
 continuous_cd = true

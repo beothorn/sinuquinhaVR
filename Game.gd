@@ -10,6 +10,15 @@ const MOVEMENT_SPEED = 1.5
 const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
 const CUE_STICK_MAX_IMPULSE = 0.7
+const MINIMUN_BALL_TOTAL_SPEED = 0.005
+
+enum GAME_STATE{
+  moving,
+  aiming,
+  waiting_for_own_play
+}
+
+var state = GAME_STATE.moving
 
 const BALLS_Y = 1.024
 const TABLE_INITIAL_SETUP = {
@@ -49,7 +58,7 @@ const TABLE_INITIAL_SETUP = {
 	]
 }
 
-var current_white_ball
+
 var saved_table = TABLE_INITIAL_SETUP
 
 onready var vr_player = $VRPlayer
@@ -80,6 +89,10 @@ var last_joy_axis_measurement = 99
 var last_joy_axis_speed = 0
 var current_cue_stick_rigid_body: RigidBody
 var cueStick: Spatial
+var previous_speed = 0
+
+var current_white_ball: RigidBody
+var balls: Array
 
 var auto_shoot_count = 0
 
@@ -109,22 +122,24 @@ func _initialize_vr():
 
 func _physics_process(delta: float):
 	var balls_velocity = 0
-	for ball in $Balls.get_children():
+	for ball in balls:
 		balls_velocity = balls_velocity + ball.linear_velocity.length()
-	balls_velocity = balls_velocity / $Balls.get_children().size()
+	balls_velocity = balls_velocity / balls.size()
 	
-	for ball in $WhiteBall.get_children():
-		balls_velocity = balls_velocity + ball.linear_velocity.length()
-	balls_velocity = balls_velocity / $WhiteBall.get_children().size()
+	balls_velocity = (balls_velocity + current_white_ball.linear_velocity.length()) / 2
 	
-	if balls_velocity <= 0.1 and waiting_balls_to_stop:
+	print(balls_velocity)
+	if balls_velocity <= MINIMUN_BALL_TOTAL_SPEED and previous_speed > MINIMUN_BALL_TOTAL_SPEED:
 		_save_table()
 		_load_saved_table()
 		waiting_balls_to_stop = false
 		print(balls_velocity)
 	
+	previous_speed = balls_velocity
+	
 	_process_left_controller_input(delta)
-	_process_right_controller_input(delta)
+	if balls_velocity <= MINIMUN_BALL_TOTAL_SPEED:
+		_process_right_controller_input(delta)
 
 func _process_left_controller_input(delta: float):
 	_move_player(delta, left_controller.get_movement_vector())
@@ -244,8 +259,8 @@ func _move_real_stick_to_joystick_pos():
 	
 	new_cue_stick_rigid_body = cue_stick_rigid_body.instance()
 	new_cue_stick_rigid_body.global_transform = displayCueStickHitterPositon.global_transform
+	new_cue_stick_rigid_body.connect("body_entered", self, "_on_CueStick_body_entered")
 	add_child(new_cue_stick_rigid_body)
-	new_cue_stick_rigid_body.connect("body_entered", self, " _on_CueStick_body_entered")
 	current_cue_stick_rigid_body = new_cue_stick_rigid_body
 	
 	cueStick = cue_stick_model.instance()
@@ -253,19 +268,20 @@ func _move_real_stick_to_joystick_pos():
 	cue_stick_pos = displayCueStick.global_transform
 	add_child(cueStick)
 	
-func _on_CueStick_body_entered(body):	
-	print("HIT")
-	after_hit = true
-	waiting_balls_to_stop = true
-	_remove_aiming_cuestick()
+func _on_CueStick_body_entered(body):
+	if body.name == "WhiteBall":
+		print("HIT")
+		after_hit = true
+		waiting_balls_to_stop = true
+		current_cue_stick_rigid_body.queue_free()
 
 func _remove_aiming_cuestick():
-	current_cue_stick_rigid_body.queue_free()
 	cueStick.queue_free()
 
 func _readd_white_ball(pos: Vector3 = Vector3(-0.676, 1.024, 0.008)):
 	current_white_ball = white_ball_gen.instance()
 	$WhiteBall.add_child(current_white_ball)
+	current_white_ball.connect("body_entered", self, "_on_CueStick_body_entered")
 	current_white_ball.transform.origin = pos
 	
 func _add_ball(pos: Vector3, ball_number: int):
@@ -273,6 +289,7 @@ func _add_ball(pos: Vector3, ball_number: int):
 	ball.change_ball(ball_number)
 	$Balls.add_child(ball)
 	ball.transform.origin = pos
+	balls.append(ball)
 
 func _load_table_state(table_state):
 	for ball in $Balls.get_children():
@@ -280,6 +297,7 @@ func _load_table_state(table_state):
 	for ball in $WhiteBall.get_children():
 		ball.queue_free()
 	_readd_white_ball(Vector3(table_state.white_ball.x, BALLS_Y, table_state.white_ball.z))
+	balls.clear()
 	for ball_data in table_state.balls:
 		_add_ball(Vector3(ball_data.pos.x, BALLS_Y, ball_data.pos.z), ball_data.number)
 
@@ -310,3 +328,4 @@ func _load_saved_table():
 
 func _on_Ground_body_entered(body):
 	_readd_white_ball()
+
