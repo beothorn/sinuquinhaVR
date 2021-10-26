@@ -69,6 +69,8 @@ onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
 onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
 onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hitterPosition
 
+onready var label:Label = $HUD/GUI/Label
+
 onready var cue_stick_rigid_body = preload("res://CueStickRigidBody.tscn")
 onready var white_ball_gen = preload("res://WhiteBallRigidBody.tscn")
 onready var ball_gen = preload("res://BallRigidBody.tscn")
@@ -128,12 +130,11 @@ func _physics_process(delta: float):
 	
 	balls_velocity = (balls_velocity + current_white_ball.linear_velocity.length()) / 2
 	
-	print(balls_velocity)
+	label.text = str(balls_velocity)
 	if balls_velocity <= MINIMUN_BALL_TOTAL_SPEED and previous_speed > MINIMUN_BALL_TOTAL_SPEED:
 		_save_table()
 		_load_saved_table()
 		waiting_balls_to_stop = false
-		print(balls_velocity)
 	
 	previous_speed = balls_velocity
 	
