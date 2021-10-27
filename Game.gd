@@ -69,6 +69,8 @@ onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
 onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
 onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hitterPosition
 
+onready var target:CSGSphere = $Target
+
 onready var label:Label = $HUD/GUI/Label
 
 onready var cue_stick_rigid_body = preload("res://CueStickRigidBody.tscn")
@@ -171,8 +173,15 @@ func _process_right_controller_input(delta: float):
 	if not aiming_mode and was_aiming_mode:
 		_remove_aiming_cuestick()
 	
+	var result = get_world().direct_space_state.intersect_ray(displayCueStick.transform.origin,
+		displayCueStick.transform.basis.y.normalized())
+	if result:
+		target.global_transform.origin = result.position
+		print(result.position)
+	
 	if aiming_mode:
 		_aim(right_controller.get_raw_y_axis(), delta)
+		
 
 func _rotate_camera(axis: float, delta: float):
 	if(deboucing_rotation_time_counter < DEBOUNCE_ROTATION_TIME):
@@ -189,6 +198,9 @@ func _rotate_camera(axis: float, delta: float):
 func _aim(current_joy_axis: float, delta: float):
 	if after_throw:
 		return
+		
+	
+	
 	var cue_stick_y_axis = current_cue_stick_rigid_body.transform.basis.y.normalized()
 	cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_joy_axis * CUE_STICK_BACK_SIZE )
 	if current_joy_axis < CUE_STICK_RELEASE_POINT:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://Game.gd" type="Script" id=1]
 [ext_resource path="res://Controller.gd" type="Script" id=2]
@@ -7,29 +7,44 @@
 [ext_resource path="res://assets/Oculus Touch for Quest 2/right_joy.tscn" type="PackedScene" id=5]
 [ext_resource path="res://assets/Oculus Touch for Quest 2/left_joy.tscn" type="PackedScene" id=6]
 [ext_resource path="res://assets/cueStick/cueStick.fbx" type="PackedScene" id=7]
-[ext_resource path="res://HUD.gd" type="Script" id=8]
 [ext_resource path="res://resources/tableWood.tres" type="Material" id=10]
 [ext_resource path="res://assets/tempTextureTable.jpg" type="Texture" id=11]
 
-[sub_resource type="CylinderShape" id=1]
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 0, 0, 0, 1 )
+
+[sub_resource type="ViewportTexture" id=32]
+viewport_path = NodePath("CeilingCameraView")
+
+[sub_resource type="SpatialMaterial" id=33]
+resource_local_to_scene = true
+flags_transparent = true
+flags_unshaded = true
+albedo_texture = SubResource( 32 )
+
+[sub_resource type="PlaneMesh" id=2]
+resource_local_to_scene = true
+material = SubResource( 33 )
+
+[sub_resource type="CylinderShape" id=3]
 radius = 0.0109022
 height = 1.54559
 
-[sub_resource type="PhysicsMaterial" id=2]
+[sub_resource type="PhysicsMaterial" id=4]
 
-[sub_resource type="CubeMesh" id=3]
+[sub_resource type="CubeMesh" id=5]
 
-[sub_resource type="VisualShaderNodeColorConstant" id=4]
+[sub_resource type="VisualShaderNodeColorConstant" id=6]
 constant = Color( 0.0908203, 0.375, 0, 1 )
 
-[sub_resource type="VisualShaderNodeTexture" id=5]
+[sub_resource type="VisualShaderNodeTexture" id=7]
 texture = ExtResource( 11 )
 
-[sub_resource type="VisualShaderNodeVectorOp" id=6]
+[sub_resource type="VisualShaderNodeVectorOp" id=8]
 output_port_for_preview = 0
 operator = 2
 
-[sub_resource type="VisualShader" id=7]
+[sub_resource type="VisualShader" id=9]
 code = "shader_type spatial;
 render_mode specular_schlick_ggx;
 
@@ -67,60 +82,79 @@ void light() {
 "
 graph_offset = Vector2( -303, 44.25 )
 nodes/fragment/0/position = Vector2( 740, 120 )
-nodes/fragment/2/node = SubResource( 4 )
+nodes/fragment/2/node = SubResource( 6 )
 nodes/fragment/2/position = Vector2( 60, 140 )
-nodes/fragment/3/node = SubResource( 5 )
+nodes/fragment/3/node = SubResource( 7 )
 nodes/fragment/3/position = Vector2( -40, 300 )
-nodes/fragment/6/node = SubResource( 6 )
+nodes/fragment/6/node = SubResource( 8 )
 nodes/fragment/6/position = Vector2( 440, 240 )
 nodes/fragment/connections = PoolIntArray( 2, 0, 6, 0, 6, 0, 0, 0, 3, 0, 6, 1 )
 
-[sub_resource type="ShaderMaterial" id=8]
-shader = SubResource( 7 )
+[sub_resource type="ShaderMaterial" id=10]
+shader = SubResource( 9 )
 
-[sub_resource type="ConcavePolygonShape" id=9]
+[sub_resource type="ConcavePolygonShape" id=11]
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
 
-[sub_resource type="PhysicsMaterial" id=10]
+[sub_resource type="PhysicsMaterial" id=12]
 friction = 0.0
 rough = true
 bounce = 0.9
 
-[sub_resource type="CubeMesh" id=11]
+[sub_resource type="CubeMesh" id=13]
 
-[sub_resource type="ConcavePolygonShape" id=12]
+[sub_resource type="ConcavePolygonShape" id=14]
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
-
-[sub_resource type="ConcavePolygonShape" id=13]
-data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
-
-[sub_resource type="CubeMesh" id=14]
 
 [sub_resource type="ConcavePolygonShape" id=15]
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
 
-[sub_resource type="ConcavePolygonShape" id=16]
+[sub_resource type="CubeMesh" id=16]
+
+[sub_resource type="ConcavePolygonShape" id=17]
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
 
-[sub_resource type="CylinderMesh" id=17]
+[sub_resource type="ConcavePolygonShape" id=18]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="CylinderMesh" id=19]
 top_radius = 0.08
 bottom_radius = 0.08
 height = 0.523
 
-[sub_resource type="BoxShape" id=18]
+[sub_resource type="BoxShape" id=20]
 extents = Vector3( 0.208565, 0.202354, 0.205906 )
 
-[sub_resource type="PlaneMesh" id=19]
+[sub_resource type="PlaneMesh" id=21]
+
+[sub_resource type="ViewportTexture" id=24]
+viewport_path = NodePath("HUD/GUI")
+
+[sub_resource type="SpatialMaterial" id=25]
+resource_local_to_scene = true
+flags_transparent = true
+flags_unshaded = true
+albedo_texture = SubResource( 24 )
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 1 )
 
-[node name="Camera" type="Camera" parent="."]
-transform = Transform( -0.947996, -0.250225, 0.196701, -0.00161672, 0.621785, 0.783186, -0.318279, 0.742139, -0.589854, 0.900267, 2.88716, -1.1572 )
+[node name="Target" type="CSGSphere" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59526, 0 )
+radius = 0.01
+material = SubResource( 1 )
+
+[node name="CeilingCameraView" type="Viewport" parent="."]
+size = Vector2( 500, 500 )
+transparent_bg = true
+hdr = false
+gui_disable_input = true
+
+[node name="CeilingCamera" type="Camera" parent="CeilingCameraView"]
+transform = Transform( 1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 4.14875, 0 )
 projection = 1
 current = true
-fov = 85.1
-size = 4.32
+size = 5.62
 
 [node name="World" type="Spatial" parent="."]
 transform = Transform( 2.01607, 0, 0, 0, 1, 0, 0, 0, 1.95055, 0.18757, -0.00297594, -0.067548 )
@@ -139,6 +173,11 @@ script = ExtResource( 2 )
 
 [node name="leftJoy" parent="VRPlayer/LeftController" instance=ExtResource( 6 )]
 transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
+
+[node name="CeilingView" type="MeshInstance" parent="VRPlayer/LeftController"]
+transform = Transform( 0.0921589, -0.0388143, -0.000424097, -0.00637648, -0.0140605, -0.098801, 0.0382893, 0.091081, -0.015433, 0, 0.15289, 0 )
+mesh = SubResource( 2 )
+material/0 = null
 
 [node name="RightController" type="ARVRController" parent="VRPlayer"]
 controller_id = 2
@@ -166,67 +205,67 @@ collision_mask = 7
 
 [node name="CollisionShape" type="CollisionShape" parent="VRPlayer/RightController/CueStickCollisionDetector"]
 transform = Transform( 0.96503, -0.192544, 0.177886, -0.00519256, 0.664422, 0.74734, -0.262087, -0.722129, 0.640187, 0.147147, -0.483706, 0.572933 )
-shape = SubResource( 1 )
+shape = SubResource( 3 )
 
 [node name="PoolTable" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.864918, 0 )
 
 [node name="PoolTableMat" type="StaticBody" parent="PoolTable"]
 collision_mask = 7
-physics_material_override = SubResource( 2 )
+physics_material_override = SubResource( 4 )
 
 [node name="MeshInstance" type="MeshInstance" parent="PoolTable/PoolTableMat"]
 transform = Transform( 2.54, 0, 0, 0, 0.1, 0, 0, 0, 1.27, 0, 0, 0 )
-mesh = SubResource( 3 )
-material/0 = SubResource( 8 )
+mesh = SubResource( 5 )
+material/0 = SubResource( 10 )
 
 [node name="CollisionShape" type="CollisionShape" parent="PoolTable/PoolTableMat"]
 transform = Transform( 2.54, 0, 0, 0, 0.1, 0, 0, 0, 1.27, 0, 0, 0 )
-shape = SubResource( 9 )
+shape = SubResource( 11 )
 
 [node name="PoolTableBorders" type="StaticBody" parent="PoolTable"]
 collision_mask = 7
-physics_material_override = SubResource( 10 )
+physics_material_override = SubResource( 12 )
 
 [node name="LeftMesh" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 0.14, 0, 0, 0, 0.06, 0, 0, 0, 1.27, 2.678, 0.16, 0 )
-mesh = SubResource( 11 )
+mesh = SubResource( 13 )
 material/0 = ExtResource( 10 )
 
 [node name="LeftCollision" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 0.14, 0, 0, 0, 0.06, 0, 0, 0, 1.27, 2.678, 0.16, 0 )
-shape = SubResource( 12 )
+shape = SubResource( 14 )
 
 [node name="RightMesh" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 0.14, 0, 0, 0, 0.06, 0, 0, 0, 1.27, -2.678, 0.16, 0 )
-mesh = SubResource( 11 )
+mesh = SubResource( 13 )
 material/0 = ExtResource( 10 )
 
 [node name="RightCollision" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 0.14, 0, 0, 0, 0.06, 0, 0, 0, 1.27, -2.678, 0.16, 0 )
-shape = SubResource( 13 )
+shape = SubResource( 15 )
 
 [node name="UpLeftMesh" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 2.54, 0, 0, 0, 0.06, 0, 0, 0, 0.14, 0, 0.16, 1.409 )
-mesh = SubResource( 14 )
+mesh = SubResource( 16 )
 material/0 = ExtResource( 10 )
 
 [node name="UpLeftCollision" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 2.54, 0, 0, 0, 0.06, 0, 0, 0, 0.14, 0, 0.16, 1.409 )
-shape = SubResource( 15 )
+shape = SubResource( 17 )
 
 [node name="DownLeftMesh" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 2.54, 0, 0, 0, 0.06, 0, 0, 0, 0.14, 0, 0.16, -1.409 )
-mesh = SubResource( 14 )
+mesh = SubResource( 16 )
 material/0 = ExtResource( 10 )
 
 [node name="DownLeftCollision" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 2.54, 0, 0, 0, 0.06, 0, 0, 0, 0.14, 0, 0.16, -1.409 )
-shape = SubResource( 16 )
+shape = SubResource( 18 )
 
 [node name="HoleDownMesh" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.35758 )
-mesh = SubResource( 17 )
+mesh = SubResource( 19 )
 material/0 = null
 
 [node name="Balls" type="Spatial" parent="."]
@@ -242,19 +281,17 @@ shadow_bias = -0.02
 transform = Transform( 400.711, 0, 0, 0, -41.9619, 0, 0, 0, 193.443, 0, -8.68345, 0 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Ground"]
-shape = SubResource( 18 )
+shape = SubResource( 20 )
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
 
 [node name="HUD" type="MeshInstance" parent="."]
 transform = Transform( -1.36127, -5.63563e-15, 1.03016e-07, -1.19006e-07, 6.44641e-08, -1.17837, 0, -0.431639, -1.50755e-08, 0.598671, 2.43484, 2.03848 )
-mesh = SubResource( 19 )
-material/0 = null
-script = ExtResource( 8 )
+mesh = SubResource( 21 )
+material/0 = SubResource( 25 )
 
 [node name="GUI" type="Viewport" parent="HUD"]
 size = Vector2( 64, 64 )
-transparent_bg = true
 hdr = false
 usage = 1
 render_target_v_flip = true
