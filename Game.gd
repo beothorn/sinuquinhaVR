@@ -173,11 +173,17 @@ func _process_right_controller_input(delta: float):
 	if not aiming_mode and was_aiming_mode:
 		_remove_aiming_cuestick()
 	
-	var result = get_world().direct_space_state.intersect_ray(displayCueStick.transform.origin,
-		displayCueStick.transform.basis.y.normalized())
+	$Start.global_transform.origin = displayCueStick.global_transform.origin
+	$End.global_transform.origin = displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6)
+	
+	var result = get_world().direct_space_state.intersect_ray(
+		displayCueStick.global_transform.origin,
+		displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6),
+		[],
+		4
+		)
 	if result:
 		target.global_transform.origin = result.position
-		print(result.position)
 	
 	if aiming_mode:
 		_aim(right_controller.get_raw_y_axis(), delta)
