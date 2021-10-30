@@ -11,6 +11,7 @@ const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
 const CUE_STICK_MAX_IMPULSE = 0.03
 const MINIMUN_BALL_TOTAL_SPEED = 0.005
+const CUE_MIN_DISTANCE = 1.897
 
 const BALLS_Y = 1.024
 const TABLE_INITIAL_SETUP = {
@@ -74,7 +75,6 @@ onready var cueStickCollisionDetector: Area = $VRPlayer/RightController/CueStick
 export(bool) var debug = false
 
 var aiming_mode = false
-var after_hit = false
 var after_throw = false
 var pulled_joystick_down = false
 var waiting_balls_to_stop = false
@@ -139,45 +139,52 @@ func _process_left_controller_input(delta: float):
 func _process_right_controller_input(delta: float):
 	_rotate_camera(right_controller.get_x_axis(), delta)
 	
-	var bodiesCollidingWithCuestick: Array = cueStickCollisionDetector.get_overlapping_bodies()
-	if bodiesCollidingWithCuestick.size() > 0 and not aiming_mode:
-		displayCueStickTransparent.visible = true
-		target.visible = false
-		displayCueStick.visible = false
-		return
-	
-	displayCueStickTransparent.visible = false
-	displayCueStick.visible = true
-	
-	var was_aiming_mode = aiming_mode
-	aiming_mode =  right_controller.is_trigger_pressed() and target.visible
-	if after_hit:
-		if aiming_mode:
-			return
-		else:
-			after_hit = false
-	
-	if aiming_mode and not was_aiming_mode:
-		after_throw = false
-		_move_real_stick_to_joystick_pos()
-	if not aiming_mode and was_aiming_mode:
-		_remove_aiming_cuestick()
-	
-	if not aiming_mode:
-		var result = get_world().direct_space_state.intersect_ray(
+	var result = get_world().direct_space_state.intersect_ray(
 			displayCueStick.global_transform.origin,
 			displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6),
 			[],
 			4
 		)
-		if result:
-			target.visible = true
-			target.global_transform.origin = result.position
-		else:
+	
+	if not aiming_mode:
+		var bodiesCollidingWithCuestick: Array = cueStickCollisionDetector.get_overlapping_bodies()
+		if bodiesCollidingWithCuestick.size() > 0 and not aiming_mode:
+			displayCueStickTransparent.visible = true
 			target.visible = false
+			displayCueStick.visible = false
+			return
+		
+		if result:
+			var dist = displayCueStick.global_transform.origin.distance_to(result.position)
+			if dist > CUE_MIN_DISTANCE:
+				displayCueStickTransparent.visible = true
+				target.visible = false
+				displayCueStick.visible = false
+				return
+			else:
+				displayCueStickTransparent.visible = false
+				target.visible = true
+				displayCueStick.visible = true
+				target.global_transform.origin = result.position
+		else:
+			displayCueStickTransparent.visible = true
+			target.visible = false
+			displayCueStick.visible = false
+			return
+	
+	var was_aiming_mode = aiming_mode
+	aiming_mode =  right_controller.is_trigger_pressed()
+	
+	if aiming_mode and not was_aiming_mode:
+		after_throw = false
+		_move_real_stick_to_joystick_pos()
+		displayCueStickTransparent.visible = false
+		target.visible = true
+		displayCueStick.visible = false
+	if not aiming_mode and was_aiming_mode:
+		_remove_aiming_cuestick()
 	
 	if aiming_mode:
-		displayCueStick.visible = false
 		_aim(target.global_transform.origin, right_controller.get_raw_y_axis(), delta)
 		
 
@@ -278,8 +285,6 @@ func _move_real_stick_to_joystick_pos():
 func _on_CueStick_body_entered(body):
 	if body.name == "WhiteBall":
 		print("HIT")
-		after_hit = true
-		waiting_balls_to_stop = true
 
 func _remove_aiming_cuestick():
 	cueStick.queue_free()
