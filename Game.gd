@@ -9,7 +9,7 @@ const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
 const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
-const CUE_STICK_MAX_IMPULSE = 0.7
+const CUE_STICK_MAX_IMPULSE = 0.03
 const MINIMUN_BALL_TOTAL_SPEED = 0.005
 
 enum GAME_STATE{
@@ -67,7 +67,6 @@ onready var left_controller: QuestContorller = $VRPlayer/LeftController
 onready var right_controller: QuestContorller = $VRPlayer/RightController
 onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
 onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
-onready var displayCueStickHitterPositon: Spatial = $VRPlayer/RightController/hitterPosition
 
 onready var target:CSGSphere = $Target
 
@@ -91,7 +90,6 @@ var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 var cue_stick_pos: Transform
 var last_joy_axis_measurement = 99
 var last_joy_axis_speed = 0
-var current_cue_stick_rigid_body: RigidBody
 var cueStick: Spatial
 var previous_speed = 0
 
@@ -136,6 +134,7 @@ func _physics_process(delta: float):
 	if balls_velocity <= MINIMUN_BALL_TOTAL_SPEED and previous_speed > MINIMUN_BALL_TOTAL_SPEED:
 		_save_table()
 		_load_saved_table()
+		displayCueStick.visible = true
 		waiting_balls_to_stop = false
 	
 	previous_speed = balls_velocity
@@ -153,10 +152,12 @@ func _process_right_controller_input(delta: float):
 	var bodiesCollidingWithCuestick: Array = cueStickCollisionDetector.get_overlapping_bodies()
 	if bodiesCollidingWithCuestick.size() > 0 and not aiming_mode:
 		displayCueStickTransparent.visible = true
+		target.visible = false
 		displayCueStick.visible = false
 		return
 	
 	displayCueStickTransparent.visible = false
+	displayCueStick.visible = true
 	
 	var was_aiming_mode = aiming_mode
 	aiming_mode =  right_controller.is_trigger_pressed() 
@@ -165,7 +166,7 @@ func _process_right_controller_input(delta: float):
 			return
 		else:
 			after_hit = false
-	displayCueStick.visible = ! aiming_mode
+	
 	var current_y_axis = right_controller.get_y_axis()
 	if aiming_mode and not was_aiming_mode:
 		after_throw = false
@@ -173,20 +174,22 @@ func _process_right_controller_input(delta: float):
 	if not aiming_mode and was_aiming_mode:
 		_remove_aiming_cuestick()
 	
-	$Start.global_transform.origin = displayCueStick.global_transform.origin
-	$End.global_transform.origin = displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6)
-	
-	var result = get_world().direct_space_state.intersect_ray(
-		displayCueStick.global_transform.origin,
-		displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6),
-		[],
-		4
+	if not aiming_mode:
+		var result = get_world().direct_space_state.intersect_ray(
+			displayCueStick.global_transform.origin,
+			displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6),
+			[],
+			4
 		)
-	if result:
-		target.global_transform.origin = result.position
+		if result:
+			target.visible = true
+			target.global_transform.origin = result.position
+		else:
+			target.visible = false
 	
 	if aiming_mode:
-		_aim(right_controller.get_raw_y_axis(), delta)
+		displayCueStick.visible = false
+		_aim(target.global_transform.origin, right_controller.get_raw_y_axis(), delta)
 		
 
 func _rotate_camera(axis: float, delta: float):
@@ -201,13 +204,11 @@ func _rotate_camera(axis: float, delta: float):
 			vr_player.rotate_y(PLAYER_ROTATION_ANGLE)
 			deboucing_rotation_time_counter = 0
 
-func _aim(current_joy_axis: float, delta: float):
+func _aim(impulse_offset: Vector3, current_joy_axis: float, delta: float):
 	if after_throw:
-		return
-		
+		return	
 	
-	
-	var cue_stick_y_axis = current_cue_stick_rigid_body.transform.basis.y.normalized()
+	var cue_stick_y_axis = cueStick.global_transform.basis.y.normalized()
 	cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_joy_axis * CUE_STICK_BACK_SIZE )
 	if current_joy_axis < CUE_STICK_RELEASE_POINT:
 		pulled_joystick_down = true
@@ -253,9 +254,15 @@ func _aim(current_joy_axis: float, delta: float):
 			#print(impulse_to_apply)
 			#print(apply_force)
 			#print("================")
-			current_cue_stick_rigid_body.apply_central_impulse( apply_force )
+			current_white_ball.apply_impulse(impulse_offset, apply_force)
 			after_throw = true
 			pulled_joystick_down = false
+			cueStick.visible = false
+			displayCueStickTransparent.visible = false
+			displayCueStick.visible = false
+			target.visible = false
+			$WhiteBallCenter.visible = false
+			
 		
 	last_joy_axis_speed = (current_joy_axis - last_joy_axis_measurement) / delta
 	last_joy_axis_measurement = current_joy_axis
@@ -274,14 +281,6 @@ func _move_player(delta: float, movement_vector: Vector2):
 		vr_player.global_translate(movement_right + movement_forward)
 
 func _move_real_stick_to_joystick_pos():
-	var new_cue_stick_rigid_body: RigidBody = cue_stick_rigid_body.instance()
-	
-	new_cue_stick_rigid_body = cue_stick_rigid_body.instance()
-	new_cue_stick_rigid_body.global_transform = displayCueStickHitterPositon.global_transform
-	new_cue_stick_rigid_body.connect("body_entered", self, "_on_CueStick_body_entered")
-	add_child(new_cue_stick_rigid_body)
-	current_cue_stick_rigid_body = new_cue_stick_rigid_body
-	
 	cueStick = cue_stick_model.instance()
 	cueStick.global_transform = displayCueStick.global_transform
 	cue_stick_pos = displayCueStick.global_transform
@@ -292,7 +291,6 @@ func _on_CueStick_body_entered(body):
 		print("HIT")
 		after_hit = true
 		waiting_balls_to_stop = true
-		current_cue_stick_rigid_body.queue_free()
 
 func _remove_aiming_cuestick():
 	cueStick.queue_free()
@@ -319,6 +317,8 @@ func _load_table_state(table_state):
 	balls.clear()
 	for ball_data in table_state.balls:
 		_add_ball(Vector3(ball_data.pos.x, BALLS_Y, ball_data.pos.z), ball_data.number)
+	$WhiteBallCenter.global_transform.origin = current_white_ball.global_transform.origin
+	$WhiteBallCenter.visible = true
 
 func _reset_table():
 	_load_table_state(TABLE_INITIAL_SETUP)
