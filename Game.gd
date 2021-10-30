@@ -12,14 +12,6 @@ const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes 
 const CUE_STICK_MAX_IMPULSE = 0.03
 const MINIMUN_BALL_TOTAL_SPEED = 0.005
 
-enum GAME_STATE{
-  moving,
-  aiming,
-  waiting_for_own_play
-}
-
-var state = GAME_STATE.moving
-
 const BALLS_Y = 1.024
 const TABLE_INITIAL_SETUP = {
 	"white_ball": {
@@ -105,10 +97,8 @@ func _ready():
 func _initialize_vr():
 	if not debug:
 		var ovr_init_config_pre = preload("res://addons/godot_ovrmobile/OvrInitConfig.gdns")
-		var ovr_performance_pre = preload("res://addons/godot_ovrmobile/OvrPerformance.gdns")
 		
 		var ovr_init_config = ovr_init_config_pre.new()
-		var ovr_performance = ovr_performance_pre.new()
 		var interface = ARVRServer.find_interface("OVRMobile")
 		ARVRServer.world_scale = WORLD_SCALE
 		$VRPlayer/LeftController/leftJoy.scale = Vector3(WORLD_SCALE, WORLD_SCALE, WORLD_SCALE)
@@ -160,14 +150,13 @@ func _process_right_controller_input(delta: float):
 	displayCueStick.visible = true
 	
 	var was_aiming_mode = aiming_mode
-	aiming_mode =  right_controller.is_trigger_pressed() 
+	aiming_mode =  right_controller.is_trigger_pressed() and target.visible
 	if after_hit:
 		if aiming_mode:
 			return
 		else:
 			after_hit = false
 	
-	var current_y_axis = right_controller.get_y_axis()
 	if aiming_mode and not was_aiming_mode:
 		after_throw = false
 		_move_real_stick_to_joystick_pos()
@@ -345,6 +334,6 @@ func _save_table():
 func _load_saved_table():
 	_load_table_state(saved_table)
 
-func _on_Ground_body_entered(body):
+func _on_Ground_body_entered():
 	_readd_white_ball()
 
