@@ -8,10 +8,10 @@ const DEBOUNCE_ROTATION_TIME = 0.33
 const PLAYER_ROTATION_ANGLE = 0.53 # App. 30'
 const MOVEMENT_SPEED = 1.5
 const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
-const CUE_STICK_RELEASE_POINT = -0.0001 # Joystick axis point where if joy goes to zero, it will throw
 const CUE_STICK_MAX_IMPULSE = 0.03
 const MINIMUN_BALL_TOTAL_SPEED = 0.005
 const CUE_MIN_DISTANCE = 1.897
+const CUE_OFFSET_TO_HIT_TARGET = 1.59
 
 const BALLS_Y = 1.024
 const TABLE_INITIAL_SETUP = {
@@ -205,59 +205,67 @@ func _aim(impulse_offset: Vector3, current_joy_axis: float, delta: float):
 		return	
 	
 	var cue_stick_y_axis = cueStick.global_transform.basis.y.normalized()
-	cueStick.global_transform.origin = cue_stick_pos.origin + ( cue_stick_y_axis * current_joy_axis * CUE_STICK_BACK_SIZE )
-	if current_joy_axis < CUE_STICK_RELEASE_POINT:
-		pulled_joystick_down = true
-	if current_joy_axis >= -0.000001 :
-		if pulled_joystick_down:
-			var current_speed = (current_joy_axis - last_joy_axis_measurement) / delta
-			# line from (last_joy_axis_measurement, last_joy_axis_speed) to (current_joy_axis, current_speed)
-			# need to find where it intersects CUE_STICK_RELEASE_POINT
-			
-			# x is y_axis (joystick y position ranging from -1 to 1)
-			# y is speed (joystick change per time)
-			# y = a*x + b
-			# a is the slope
-			# a = ((y2-y1)/(x2-x1))
-			var a = ((current_speed - last_joy_axis_speed)/(current_joy_axis - last_joy_axis_measurement))
-					
-			
-			# y = ((y2-y1)/(x2-x1))*x + b
-			# -b + y = ax
-			# b - y = -ax
-			# b = -ax + y
-			# b = y - ax
-			var b = current_speed - ( a * current_joy_axis )
-			
-			# y = ax + b
-			var release_speed = (a * CUE_STICK_RELEASE_POINT) + b
-			
-			var max_joy_speed = 56
-			if release_speed > max_joy_speed:
-				release_speed = max_joy_speed
-			
-			
-			
-			var impulse_factor = (release_speed / max_joy_speed)
-			# we want weak to e very weak and strong to be very strong, it is not a linear relation
-			var impulse_with_ease = ease(impulse_factor, -1.8) # see https://github.com/godotengine/godot/issues/10572
-			var impulse_to_apply = (impulse_with_ease * CUE_STICK_MAX_IMPULSE)
-			var apply_force = cue_stick_y_axis * impulse_to_apply
-			#print("================")
-			#print(release_speed)
-			#print(impulse_factor)
-			#print(impulse_with_ease)
-			#print(impulse_to_apply)
-			#print(apply_force)
-			#print("================")
-			current_white_ball.apply_impulse(impulse_offset, apply_force)
-			after_throw = true
-			pulled_joystick_down = false
-			cueStick.visible = false
-			displayCueStickTransparent.visible = false
-			displayCueStick.visible = false
-			target.visible = false
-			$WhiteBallCenter.visible = false
+	var joy_to_physical_size_conversion = current_joy_axis * CUE_STICK_BACK_SIZE
+	var stick_offset = cue_stick_y_axis * joy_to_physical_size_conversion
+	cueStick.global_transform.origin = cue_stick_pos.origin + stick_offset
+	var cue_stick_distance_to_target = cueStick.global_transform.origin.distance_to(target.global_transform.origin)
+	if cue_stick_distance_to_target <= CUE_OFFSET_TO_HIT_TARGET :
+		var current_speed = (current_joy_axis - last_joy_axis_measurement) / delta
+		# line from (last_joy_axis_measurement, last_joy_axis_speed) to (current_joy_axis, current_speed)
+		# need to find where it intersects target position
+		
+		# x is y_axis (joystick y position ranging from -1 to 1)
+		# y is speed (joystick change per time)
+		# y = a*x + b
+		# a is the slope
+		# a = ((y2-y1)/(x2-x1))
+		var a = 0
+		if current_joy_axis != last_joy_axis_measurement:
+			a = ((current_speed - last_joy_axis_speed)/(current_joy_axis - last_joy_axis_measurement))
+				
+		
+		# y = ((y2-y1)/(x2-x1))*x + b
+		# -b + y = ax
+		# b - y = -ax
+		# b = -ax + y
+		# b = y - ax
+		var b = current_speed - ( a * current_joy_axis )
+		
+		# y = ax + b
+		# x comes from converting joystick axis to physical distance
+		# max x is CUE_STICK_BACK_SIZE, min is -CUE_STICK_BACK_SIZE
+		# max joy is 1, min is -1
+		# var stick_offset = cue_stick_y_axis * joy_to_physical_size_conversion
+		# or var stick_offset/joy_to_physical_size_conversion  = current_joy_axis
+		var current_distance = cue_stick_pos.origin.distance_to(stick_offset)
+		var x = current_distance/CUE_OFFSET_TO_HIT_TARGET
+		
+		var release_speed = (a * x) + b
+		
+		var max_joy_speed = 56 # speed of try and error moving the joystick as fast as I could
+		if release_speed > max_joy_speed:
+			release_speed = max_joy_speed
+		
+		var impulse_factor = (release_speed / max_joy_speed)
+		# we want weak to e very weak and strong to be very strong, it is not a linear relation
+		var impulse_with_ease = ease(impulse_factor, -1.8) # see https://github.com/godotengine/godot/issues/10572
+		var impulse_to_apply = (impulse_with_ease * CUE_STICK_MAX_IMPULSE)
+		var apply_force = cue_stick_y_axis * impulse_to_apply
+		#print("================")
+		#print(release_speed)
+		#print(impulse_factor)
+		#print(impulse_with_ease)
+		#print(impulse_to_apply)
+		#print(apply_force)
+		#print("================")
+		current_white_ball.apply_impulse(impulse_offset, apply_force)
+		after_throw = true
+		pulled_joystick_down = false
+		cueStick.visible = false
+		displayCueStickTransparent.visible = false
+		displayCueStick.visible = false
+		target.visible = false
+		$WhiteBallCenter.visible = false
 			
 		
 	last_joy_axis_speed = (current_joy_axis - last_joy_axis_measurement) / delta
