@@ -60,6 +60,7 @@ onready var left_controller: QuestContorller = $VRPlayer/LeftController
 onready var right_controller: QuestContorller = $VRPlayer/RightController
 onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
 onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
+onready var debug_label: Label = $VRPlayer/LeftController/MeshInstance/Debug/Label
 
 onready var target:CSGSphere = $Target
 
@@ -71,6 +72,8 @@ onready var ball_gen = preload("res://BallRigidBody.tscn")
 onready var cue_stick_model = preload("res://assets/cueStick/cueStick.fbx")
 
 onready var cueStickCollisionDetector: Area = $VRPlayer/RightController/CueStickCollisionDetector
+
+#onready var stick_speed = preload("res://StickSpeed.gd")
 
 export(bool) var debug = false
 
@@ -210,47 +213,12 @@ func _aim(impulse_offset: Vector3, current_joy_axis: float, delta: float):
 	cueStick.global_transform.origin = cue_stick_pos.origin + stick_offset
 	var cue_stick_distance_to_target = cueStick.global_transform.origin.distance_to(target.global_transform.origin)
 	if cue_stick_distance_to_target <= CUE_OFFSET_TO_HIT_TARGET :
-		var current_speed = (current_joy_axis - last_joy_axis_measurement) / delta
-		# line from (last_joy_axis_measurement, last_joy_axis_speed) to (current_joy_axis, current_speed)
-		# need to find where it intersects target position
+		var speed = (current_joy_axis - last_joy_axis_measurement) / delta
+		var speed_adjusted = ease(speed * 0.005, -2) # see https://github.com/godotengine/godot/issues/10572
+		print(speed_adjusted)
+		debug_label.text = str(speed_adjusted)
 		
-		# x is y_axis (joystick y position ranging from -1 to 1)
-		# y is speed (joystick change per time)
-		# y = a*x + b
-		# a is the slope
-		# a = ((y2-y1)/(x2-x1))
-		var a = 0
-		if current_joy_axis != last_joy_axis_measurement:
-			a = ((current_speed - last_joy_axis_speed)/(current_joy_axis - last_joy_axis_measurement))
-				
-		
-		# y = ((y2-y1)/(x2-x1))*x + b
-		# -b + y = ax
-		# b - y = -ax
-		# b = -ax + y
-		# b = y - ax
-		var b = current_speed - ( a * current_joy_axis )
-		
-		# y = ax + b
-		# x comes from converting joystick axis to physical distance
-		# max x is CUE_STICK_BACK_SIZE, min is -CUE_STICK_BACK_SIZE
-		# max joy is 1, min is -1
-		# var stick_offset = cue_stick_y_axis * joy_to_physical_size_conversion
-		# or var stick_offset/joy_to_physical_size_conversion  = current_joy_axis
-		var current_distance = cue_stick_pos.origin.distance_to(stick_offset)
-		var x = current_distance/CUE_OFFSET_TO_HIT_TARGET
-		
-		var release_speed = (a * x) + b
-		
-		var max_joy_speed = 56 # speed of try and error moving the joystick as fast as I could
-		if release_speed > max_joy_speed:
-			release_speed = max_joy_speed
-		
-		var impulse_factor = (release_speed / max_joy_speed)
-		# we want weak to e very weak and strong to be very strong, it is not a linear relation
-		var impulse_with_ease = ease(impulse_factor, -1.8) # see https://github.com/godotengine/godot/issues/10572
-		var impulse_to_apply = (impulse_with_ease * CUE_STICK_MAX_IMPULSE)
-		var apply_force = cue_stick_y_axis * impulse_to_apply
+		var apply_force = cue_stick_y_axis * speed_adjusted
 		#print("================")
 		#print(release_speed)
 		#print(impulse_factor)
