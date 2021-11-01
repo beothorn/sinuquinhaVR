@@ -12,7 +12,7 @@ _global_script_classes=[ {
 "base": "Spatial",
 "class": "Game",
 "language": "GDScript",
-"path": "res://Game.gd"
+"path": "res://src/GameScene/Game/Game.gd"
 }, {
 "base": "OculusTracker",
 "class": "OculusHandTracker",
@@ -30,22 +30,22 @@ _global_script_classes=[ {
 "path": "res://addons/godot_ovrmobile/example_scenes/oculus_tracker.gd"
 }, {
 "base": "ARVRController",
-"class": "QuestContorller",
+"class": "QuestController",
 "language": "GDScript",
-"path": "res://Controller.gd"
+"path": "res://src/GameScene/Game/VRPlayer/Controller/Controller.gd"
 } ]
 _global_script_class_icons={
 "Game": "",
 "OculusHandTracker": "",
 "OculusTouchController": "",
 "OculusTracker": "",
-"QuestContorller": ""
+"QuestController": ""
 }
 
 [application]
 
 config/name="VRHelloWorld"
-run/main_scene="res://Spatial.tscn"
+run/main_scene="res://src/GameScene/GameScene.tscn"
 config/icon="res://icon.png"
 
 [gdnative]
@@ -71,4 +71,4 @@ common/enable_pause_aware_picking=true
 [rendering]
 
 vram_compression/import_etc=true
-environment/default_environment="res://default_env.tres"
+environment/default_environment="res://src/GameScene/Game/default_env.tres"
