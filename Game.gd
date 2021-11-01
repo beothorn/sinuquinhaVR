@@ -92,6 +92,7 @@ var current_white_ball: RigidBody
 var balls: Array
 
 var auto_shoot_count = 0
+var fixed_axis = true
 
 func _ready():
 	_initialize_vr()
@@ -169,6 +170,7 @@ func _process_right_controller_input(delta: float):
 				target.visible = true
 				displayCueStick.visible = true
 				target.global_transform.origin = result.position
+				target.global_transform.basis = displayCueStick.global_transform.basis
 		else:
 			displayCueStickTransparent.visible = true
 			target.visible = false
@@ -217,6 +219,12 @@ func _aim(impulse_offset: Vector3, current_joy_axis: float, delta: float):
 		var speed_adjusted = ease(speed * 0.005, -2) # see https://github.com/godotengine/godot/issues/10572
 		print(speed_adjusted)
 		debug_label.text = str(speed_adjusted)
+		
+		var axis = cue_stick_y_axis
+		if fixed_axis:
+			var fixed_stick = cueStick.global_transform.origin
+			fixed_stick.y = current_white_ball.global_transform.origin.y
+			axis = (current_white_ball.global_transform.origin - fixed_stick).normalized()
 		
 		var apply_force = cue_stick_y_axis * speed_adjusted
 		#print("================")
