@@ -1,9 +1,8 @@
-[gd_scene load_steps=39 format=2]
+[gd_scene load_steps=36 format=2]
 
 [ext_resource path="res://src/GameScene/Game/VRPlayer/Controller/Oculus Touch for Quest 2/left_joy.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/GameScene/Game/Room/testPoolRoom.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/GameScene/Game/Cuestick/CueStickTransparent.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/GameScene/Game/Cuestick/cueStick.fbx" type="PackedScene" id=4]
+[ext_resource path="res://src/GameScene/Game/Cuestick/CueStickModel.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/GameScene/Game/VRPlayer/Controller/Oculus Touch for Quest 2/right_joy.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/GameScene/Game/Game.gd" type="Script" id=6]
 [ext_resource path="res://src/GameScene/Game/PoolTable/tableWood.tres" type="Material" id=7]
@@ -39,10 +38,6 @@ albedo_texture = SubResource( 31 )
 [sub_resource type="PlaneMesh" id=8]
 resource_local_to_scene = true
 material = SubResource( 7 )
-
-[sub_resource type="CylinderShape" id=9]
-radius = 0.0109022
-height = 1.59417
 
 [sub_resource type="PhysicsMaterial" id=10]
 
@@ -130,23 +125,16 @@ flags_transparent = true
 flags_unshaded = true
 albedo_texture = SubResource( 32 )
 
-[sub_resource type="ProceduralSky" id=28]
-
-[sub_resource type="Environment" id=29]
-background_mode = 2
-background_sky = SubResource( 28 )
-background_energy = 2.53
-
 [sub_resource type="SpatialMaterial" id=30]
 albedo_color = Color( 0.0313726, 0.0117647, 0.0117647, 1 )
+
+[sub_resource type="CylinderShape" id=33]
+radius = 0.0154764
+height = 1.59189
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 6 )
 debug = false
-
-[node name="CueStickTip" type="CSGSphere" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.42165, 0 )
-radius = 0.02
 
 [node name="Target" type="CSGSphere" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.59526, 0 )
@@ -175,6 +163,7 @@ far = 1.7
 
 [node name="World" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18757, 0.183929, -0.067548 )
+visible = false
 
 [node name="testPoolRoom" parent="World" instance=ExtResource( 2 )]
 transform = Transform( 1.99664, 0, 0, 0, 1.39, 0, 0, 0, 2.01581, -0.149046, -0.321018, 0.00557729 )
@@ -185,6 +174,7 @@ transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -2.17146,
 [node name="VRCamera" type="ARVRCamera" parent="VRPlayer"]
 
 [node name="LeftController" type="ARVRController" parent="VRPlayer"]
+visible = false
 script = ExtResource( 8 )
 
 [node name="leftJoy" parent="VRPlayer/LeftController" instance=ExtResource( 1 )]
@@ -216,19 +206,8 @@ script = ExtResource( 8 )
 [node name="rightJoy" parent="VRPlayer/RightController" instance=ExtResource( 5 )]
 transform = Transform( -1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 0, 0 )
 
-[node name="CueStickModel" parent="VRPlayer/RightController" instance=ExtResource( 4 )]
-transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737952, -0.300278, -0.718243, 0.627662, 0.287777, -1.02172, 1.14994 )
-
-[node name="CueStickModelTransparent" parent="VRPlayer/RightController" instance=ExtResource( 3 )]
-transform = Transform( 0.95168, -0.181217, 0.247922, -0.0643253, 0.67178, 0.737953, -0.300278, -0.718243, 0.627663, 0.287777, -1.02172, 1.14994 )
-
-[node name="CueStickCollisionDetector" type="Area" parent="VRPlayer/RightController"]
-collision_layer = 7
-collision_mask = 7
-
-[node name="CollisionShape" type="CollisionShape" parent="VRPlayer/RightController/CueStickCollisionDetector"]
-transform = Transform( 0.968924, -0.181481, 0.168078, -0.00214497, 0.673305, 0.739362, -0.247348, -0.716746, 0.651991, 0.142584, -0.483706, 0.572933 )
-shape = SubResource( 9 )
+[node name="CueStick" type="Position3D" parent="VRPlayer/RightController"]
+transform = Transform( 0.968924, -0.181478, 0.168083, -0.00215051, 0.673306, 0.739361, -0.247348, -0.716746, 0.651992, -0.010075, 0.0570783, 0.00148129 )
 
 [node name="PoolTable" type="Spatial" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.864918, 0 )
@@ -297,7 +276,6 @@ material/0 = null
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.486431, -0.868246, 0.0976435, -0.371336, -0.104281, 0.922624, -0.790882, -0.485052, -0.373136, 0, 4.12346, 0 )
-visible = false
 shadow_enabled = true
 shadow_bias = -0.02
 
@@ -323,16 +301,6 @@ margin_right = 40.0
 margin_bottom = 14.0
 text = "Player 1 turn"
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 29 )
-
-[node name="SpotLight" type="SpotLight" parent="."]
-transform = Transform( 1, 0, 0, 0, -0.00102977, 0.999999, 0, -0.999999, -0.00102977, 0, 2.45263, 0 )
-light_energy = 2.51
-light_indirect_energy = 1.37
-spot_range = 9.8115
-spot_angle = 71.7188
-
 [node name="WhiteBallCenter" type="CSGTorus" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.337102, 1.40514, -0.468323 )
 visible = false
@@ -340,5 +308,13 @@ inner_radius = 0.0574119
 outer_radius = 0.0540073
 sides = 32
 material = SubResource( 30 )
+
+[node name="CueStick" parent="." instance=ExtResource( 3 )]
+
+[node name="Area" type="Area" parent="CueStick"]
+
+[node name="CollisionShape" type="CollisionShape" parent="CueStick/Area"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.796598, 0 )
+shape = SubResource( 33 )
 
 [connection signal="body_entered" from="Ground" to="." method="_on_Ground_body_entered"]

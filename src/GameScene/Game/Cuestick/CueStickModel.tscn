@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/GameScene/Game/Cuestick/cueStick.fbx" type="PackedScene" id=1]
+[ext_resource path="res://src/GameScene/Game/Cuestick/CueStickTransparent.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/GameScene/Game/Cuestick/CueStickModel.gd" type="Script" id=3]
+
+[node name="CueStick" type="Spatial"]
+script = ExtResource( 3 )
+
+[node name="CueStickModel" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0.999999, 0, -1.595, 0 )
+
+[node name="CueStickModelTransparent" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.595, 0 )

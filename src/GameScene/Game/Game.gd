@@ -11,7 +11,6 @@ const CUE_STICK_BACK_SIZE = 0.3 # How much can you pull the stick back
 const CUE_STICK_MAX_IMPULSE = 0.03
 const MINIMUN_BALL_TOTAL_SPEED = 0.005
 const CUE_MIN_DISTANCE = 1.897
-const CUE_OFFSET_TO_HIT_TARGET = 1.59
 
 const BALLS_Y = 1.024
 const TABLE_INITIAL_SETUP = {
@@ -58,20 +57,17 @@ onready var vr_player = $VRPlayer
 onready var vr_camera = $VRPlayer/VRCamera
 onready var left_controller: QuestController = $VRPlayer/LeftController
 onready var right_controller: QuestController = $VRPlayer/RightController
-onready var displayCueStick: Spatial = $VRPlayer/RightController/CueStickModel
-onready var displayCueStickTransparent: Spatial = $VRPlayer/RightController/CueStickModelTransparent
 onready var debug_label: Label = $VRPlayer/LeftController/MeshInstance/Debug/Label
 
 onready var target:CSGSphere = $Target
 
 onready var label:Label = $HUD/GUI/Label
 
-onready var cue_stick_rigid_body = preload("res://src/GameScene/Game/Cuestick/CueStickRigidBody.tscn")
 onready var white_ball_gen = preload("res://src/GameScene/Game/Balls/WhiteBallRigidBody.tscn")
 onready var ball_gen = preload("res://src/GameScene/Game/Balls/BallRigidBody.tscn")
-onready var cue_stick_model = preload("res://src/GameScene/Game/Cuestick/cueStick.fbx")
 
-onready var cueStickCollisionDetector: Area = $VRPlayer/RightController/CueStickCollisionDetector
+onready var cueStickCollisionDetector: Area = $CueStick/Area
+onready var cueStick = $CueStick
 
 #onready var stick_speed = preload("res://StickSpeed.gd")
 
@@ -85,7 +81,6 @@ var deboucing_rotation_time_counter = DEBOUNCE_ROTATION_TIME
 var cue_stick_pos: Transform
 var last_joy_axis_measurement = 99
 var last_joy_axis_speed = 0
-var cueStick: Spatial
 var previous_speed = 0
 
 var current_white_ball: RigidBody
@@ -128,7 +123,7 @@ func _physics_process(delta: float):
 	if balls_velocity <= MINIMUN_BALL_TOTAL_SPEED and previous_speed > MINIMUN_BALL_TOTAL_SPEED:
 		_save_table()
 		_load_saved_table()
-		displayCueStick.visible = true
+		cueStick.visible = true
 		waiting_balls_to_stop = false
 	
 	previous_speed = balls_velocity
@@ -143,9 +138,12 @@ func _process_left_controller_input(delta: float):
 func _process_right_controller_input(delta: float):
 	_rotate_camera(right_controller.get_x_axis(), delta)
 	
+	if not aiming_mode:
+		cueStick.global_transform = $VRPlayer/RightController/CueStick.global_transform
+	
 	var result = get_world().direct_space_state.intersect_ray(
-			displayCueStick.global_transform.origin,
-			displayCueStick.global_transform.origin + (displayCueStick.global_transform.basis.y.normalized() * 6),
+			cueStick.global_transform.origin,
+			cueStick.global_transform.origin + (cueStick.global_transform.basis.y.normalized() * 6),
 			[],
 			4
 		)
@@ -153,41 +151,35 @@ func _process_right_controller_input(delta: float):
 	if not aiming_mode:
 		var bodiesCollidingWithCuestick: Array = cueStickCollisionDetector.get_overlapping_bodies()
 		if bodiesCollidingWithCuestick.size() > 0 and not aiming_mode:
-			displayCueStickTransparent.visible = true
 			target.visible = false
-			displayCueStick.visible = false
+			cueStick.set_transparent(true)
 			return
 		
 		if result:
-			var dist = displayCueStick.global_transform.origin.distance_to(result.position)
+			var dist = cueStick.global_transform.origin.distance_to(result.position)
 			if dist > CUE_MIN_DISTANCE:
-				displayCueStickTransparent.visible = true
+				cueStick.set_transparent(true)
 				target.visible = false
-				displayCueStick.visible = false
 				return
 			else:
-				displayCueStickTransparent.visible = false
+				cueStick.set_transparent(false)
 				target.visible = true
-				displayCueStick.visible = true
 				target.global_transform.origin = result.position
-				target.global_transform.basis = displayCueStick.global_transform.basis
+				target.global_transform.basis = cueStick.global_transform.basis
 		else:
-			displayCueStickTransparent.visible = true
+			cueStick.set_transparent(true)
 			target.visible = false
-			displayCueStick.visible = false
 			return
 	
 	var was_aiming_mode = aiming_mode
 	aiming_mode =  right_controller.is_trigger_pressed()
 	
+	
+	
 	if aiming_mode and not was_aiming_mode:
 		after_throw = false
-		_move_real_stick_to_joystick_pos()
-		displayCueStickTransparent.visible = false
 		target.visible = true
-		displayCueStick.visible = false
-	if not aiming_mode and was_aiming_mode:
-		_remove_aiming_cuestick()
+		cue_stick_pos = cueStick.global_transform
 	
 	if aiming_mode:
 		_aim(target.global_transform.origin, right_controller.get_raw_y_axis(), delta)
@@ -213,11 +205,14 @@ func _aim(impulse_offset: Vector3, current_joy_axis: float, delta: float):
 	var joy_to_physical_size_conversion = current_joy_axis * CUE_STICK_BACK_SIZE
 	var stick_offset = cue_stick_y_axis * joy_to_physical_size_conversion
 	cueStick.global_transform.origin = cue_stick_pos.origin + stick_offset
-	var cue_stick_distance_to_target = cueStick.global_transform.origin.distance_to(target.global_transform.origin)
-	if cue_stick_distance_to_target <= CUE_OFFSET_TO_HIT_TARGET :
+	
+	var cue_stick_original_to_current = cue_stick_pos.origin.distance_to(cueStick.global_transform.origin)
+	var cue_stick_original_to_target = cue_stick_pos.origin.distance_to(target.global_transform.origin)
+	var cue_stick_to_target = cueStick.global_transform.origin.distance_to(target.global_transform.origin)
+	
+	if cue_stick_original_to_current > cue_stick_original_to_target and cue_stick_to_target < cue_stick_original_to_target:
 		var speed = (current_joy_axis - last_joy_axis_measurement) / delta
 		var speed_adjusted = ease(speed * 0.005, -2) # see https://github.com/godotengine/godot/issues/10572
-		print(speed_adjusted)
 		debug_label.text = str(speed_adjusted)
 		
 		var axis = cue_stick_y_axis
@@ -238,8 +233,6 @@ func _aim(impulse_offset: Vector3, current_joy_axis: float, delta: float):
 		after_throw = true
 		pulled_joystick_down = false
 		cueStick.visible = false
-		displayCueStickTransparent.visible = false
-		displayCueStick.visible = false
 		target.visible = false
 		$WhiteBallCenter.visible = false
 			
@@ -259,19 +252,10 @@ func _move_player(delta: float, movement_vector: Vector2):
 
 	if movement_right.length() > 0 or movement_forward.length() > 0:
 		vr_player.global_translate(movement_right + movement_forward)
-
-func _move_real_stick_to_joystick_pos():
-	cueStick = cue_stick_model.instance()
-	cueStick.global_transform = displayCueStick.global_transform
-	cue_stick_pos = displayCueStick.global_transform
-	add_child(cueStick)
 	
 func _on_CueStick_body_entered(body):
 	if body.name == "WhiteBall":
 		print("HIT")
-
-func _remove_aiming_cuestick():
-	cueStick.queue_free()
 
 func _readd_white_ball(pos: Vector3 = Vector3(-0.676, 1.024, 0.008)):
 	current_white_ball = white_ball_gen.instance()
