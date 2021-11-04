@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "ARVROrigin",
+"class": "ARVROriginMovable",
+"language": "GDScript",
+"path": "res://src/GameScene/Game/VRPlayer/VRPlayer.gd"
+}, {
+"base": "Spatial",
+"class": "CluestickModel",
+"language": "GDScript",
+"path": "res://src/GameScene/Game/Cuestick/CueStickModel.gd"
+}, {
 "base": "Spatial",
 "class": "Game",
 "language": "GDScript",
@@ -35,6 +45,8 @@ _global_script_classes=[ {
 "path": "res://src/GameScene/Game/VRPlayer/Controller/Controller.gd"
 } ]
 _global_script_class_icons={
+"ARVROriginMovable": "",
+"CluestickModel": "",
 "Game": "",
 "OculusHandTracker": "",
 "OculusTouchController": "",
