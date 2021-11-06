@@ -76,8 +76,7 @@ var game_state
 func _ready():
 	_initialize_vr()
 	_reset_table()
-	game_state = preparing_to_play.new()
-	game_state.init()
+	
 
 func _initialize_vr():
 	if not debug:
@@ -127,6 +126,8 @@ func _load_table_state(table_state):
 
 func _reset_table():
 	_load_table_state(TABLE_INITIAL_SETUP)
+	game_state = preparing_to_play.new()
+	game_state.init()
 
 func save_table():
 	var new_saved_state = {

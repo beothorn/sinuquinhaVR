@@ -41,6 +41,7 @@ resource_local_to_scene = true
 material = SubResource( 7 )
 
 [sub_resource type="PhysicsMaterial" id=9]
+absorbent = true
 
 [sub_resource type="CubeMesh" id=10]
 

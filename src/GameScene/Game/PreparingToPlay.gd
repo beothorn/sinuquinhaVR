@@ -17,10 +17,11 @@ func physics_process(game, delta: float):
 	
 	# Move stick to joy position
 	game.cueStick.global_transform = game.cuestick_pos.global_transform
-	var should_fix_axis = game.left_controller.is_trigger_pressed()
+	var should_fix_axis = !game.left_controller.is_trigger_pressed()
 	if should_fix_axis: 
-		game.cueStick.global_transform.origin.y = game.BALLS_Y
-		game.cueStick.transform = game.cueStick.global_transform.looking_at(game.white_ball.global_transform.origin, Vector3(0,0,1))
+		game.cueStick.global_transform = game.cueStick.global_transform.looking_at(game.white_ball.global_transform.origin, Vector3.UP)
+		game.cueStick.rotate_object_local(Vector3.RIGHT, PI/2)
+		game.cueStick.rotate_object_local(Vector3.BACK, PI)
 	
 		
 	# If stick is intersecting other balls or table

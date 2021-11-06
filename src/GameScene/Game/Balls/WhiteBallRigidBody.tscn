@@ -18,6 +18,7 @@ physics_material_override = ExtResource( 1 )
 continuous_cd = true
 contacts_reported = 1
 contact_monitor = true
+axis_lock_linear_y = true
 angular_damp = 2.7
 
 [node name="CollisionShape" type="CollisionShape" parent="."]

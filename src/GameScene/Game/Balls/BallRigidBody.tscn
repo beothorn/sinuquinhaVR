@@ -15,6 +15,7 @@ collision_mask = 7
 mass = 0.0173469
 physics_material_override = ExtResource( 1 )
 continuous_cd = true
+axis_lock_linear_y = true
 angular_damp = 2.7
 script = ExtResource( 3 )
 
