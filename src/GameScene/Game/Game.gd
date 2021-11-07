@@ -5,42 +5,6 @@ class_name Game
 const WORLD_SCALE = 1.39
 
 const BALLS_Y = 1.024
-const TABLE_INITIAL_SETUP = {
-	"white_ball": {
-		"x": -0.676,
-		"z": 0.008
-	},
-	"balls": [
-		{
-			"number": 1,
-			"pos": {
-				"x": -2.448,
-				"z": 0.008	
-			}
-		},
-		{
-			"number": 2,
-			"pos": {
-				"x": 0.868,
-				"z": 0.687
-			}
-		},
-		{
-			"number": 11,
-			"pos": {
-				"x": 0.665,
-				"z": -0.083
-			}
-		},
-		{
-			"number": 15,
-			"pos": {
-				"x": 2.414,
-				"z": 1.143
-			}
-		}
-	]
-}
 
 onready var preparing_to_play = load("res://src/GameScene/Game/PreparingToPlay.gd")
 
@@ -62,11 +26,10 @@ onready var white_ball_center = $WhiteBallCenter
 onready var white_ball_gen = preload("res://src/GameScene/Game/Balls/WhiteBallRigidBody.tscn")
 onready var ball_gen = preload("res://src/GameScene/Game/Balls/BallRigidBody.tscn")
 
-#onready var preparing_to_play = preload("res://src/GameScene/Game/PreparingToPlay.gd")
-
 export(bool) var debug = true
 
-var saved_table = TABLE_INITIAL_SETUP
+var saved_table
+var table_initial_setup
 
 var white_ball: RigidBody
 var balls: Array
@@ -75,6 +38,9 @@ var game_state
 
 func _ready():
 	_initialize_vr()
+	white_ball = $WhiteBall/WhiteBall
+	save_table()
+	table_initial_setup = saved_table
 	_reset_table()
 	
 
@@ -125,7 +91,7 @@ func _load_table_state(table_state):
 	white_ball_center.visible = true
 
 func _reset_table():
-	_load_table_state(TABLE_INITIAL_SETUP)
+	_load_table_state(table_initial_setup)
 	game_state = preparing_to_play.new()
 	game_state.init()
 

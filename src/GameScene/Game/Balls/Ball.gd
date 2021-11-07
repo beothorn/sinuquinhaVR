@@ -1,6 +1,6 @@
 extends RigidBody
 
-var ballNumber = 0
+export(int) var ballNumber = 0
 
 func change_ball(ball_number: int):
 	ballNumber = ball_number

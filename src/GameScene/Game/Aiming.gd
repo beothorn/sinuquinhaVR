@@ -40,7 +40,7 @@ func physics_process(game, delta: float):
 		
 	var speed = (current_joy_axis - last_joy_axis_measurement) / delta
 		
-	if not (cue_stick_original_to_current > cue_stick_original_to_target and cue_stick_to_target < cue_stick_original_to_target):
+	if not (cue_stick_original_to_current >= cue_stick_original_to_target and cue_stick_to_target <= cue_stick_original_to_target):
 		last_joy_axis_speed = speed
 		last_joy_axis_measurement = current_joy_axis
 		return self
