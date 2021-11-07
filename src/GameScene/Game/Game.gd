@@ -125,6 +125,10 @@ func save_table():
 func load_saved_table():
 	_load_table_state(saved_table)
 
-func _on_Ground_body_entered():
-	_readd_white_ball()
+func _on_Ground_body_entered(body):
+	if balls.find(body) != -1:
+		balls.remove(balls.find(body))
+		body.queue_free()
+	if body == white_ball:
+		_readd_white_ball()
 
