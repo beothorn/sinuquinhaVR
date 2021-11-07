@@ -71,11 +71,12 @@ func _readd_white_ball(pos: Vector3 = Vector3(-0.676, 1.024, 0.008)):
 	white_ball.connect("body_entered", self, "_on_CueStick_body_entered")
 	white_ball.transform.origin = pos
 	
-func _add_ball(pos: Vector3, ball_number: int):
+func _add_ball(pos: Vector3, rot: Vector3, ball_number: int):
 	var ball = ball_gen.instance()
 	ball.change_ball(ball_number)
 	balls_node.add_child(ball)
 	ball.transform.origin = pos
+	ball.set_rotation_degrees(rot)
 	balls.append(ball)
 
 func _load_table_state(table_state):
@@ -83,10 +84,14 @@ func _load_table_state(table_state):
 		ball.queue_free()
 	for ball in white_ball_node.get_children():
 		ball.queue_free()
-	_readd_white_ball(Vector3(table_state.white_ball.x, BALLS_Y, table_state.white_ball.z))
+	_readd_white_ball(Vector3(table_state.white_ball.orig_x, BALLS_Y, table_state.white_ball.orig_z))
 	balls.clear()
 	for ball_data in table_state.balls:
-		_add_ball(Vector3(ball_data.pos.x, BALLS_Y, ball_data.pos.z), ball_data.number)
+		_add_ball(
+			Vector3(ball_data.transform.orig_x, BALLS_Y, ball_data.transform.orig_z), 
+			Vector3(ball_data.transform.rot_x, ball_data.transform.rot_y, ball_data.transform.rot_z), 
+			ball_data.number
+		)
 	white_ball_center.global_transform.origin = white_ball.global_transform.origin
 	white_ball_center.visible = true
 
@@ -98,17 +103,20 @@ func _reset_table():
 func save_table():
 	var new_saved_state = {
 		"white_ball": {
-			"x": white_ball.transform.origin.x,
-			"z": white_ball.transform.origin.z
+			"orig_x": white_ball.transform.origin.x,
+			"orig_z": white_ball.transform.origin.z
 		},
 		"balls": []
 	}
 	for ball in balls_node.get_children():
 		new_saved_state.balls.append({
 			"number": ball.get_ball_number(),
-			"pos": {
-				"x": ball.transform.origin.x,
-				"z": ball.transform.origin.z
+			"transform": {
+				"orig_x": ball.transform.origin.x,
+				"orig_z": ball.transform.origin.z,
+				"rot_x": ball.get_rotation_degrees().x,
+				"rot_y": ball.get_rotation_degrees().y,
+				"rot_z": ball.get_rotation_degrees().z,
 			}
 		})
 	saved_table = new_saved_state
