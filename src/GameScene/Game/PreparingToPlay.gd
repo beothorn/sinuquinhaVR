@@ -5,7 +5,7 @@ const CUE_MIN_DISTANCE = 0.3
 var aiming
 
 func init():
-	print("PrepaingToPlay")
+	print("PreparingToPlay")
 	aiming = load("res://src/GameScene/Game/Aiming.gd")
 	
 func physics_process(game, delta: float):

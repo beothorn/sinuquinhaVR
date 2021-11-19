@@ -39,8 +39,6 @@ func physics_process(game, delta: float):
 	var cue_stick_to_target = game.cueStick.global_transform.origin.distance_to(game.target.global_transform.origin)
 		
 	var speed = (current_joy_axis - last_joy_axis_measurement) / delta
-	print("not (cue_stick_original_to_current["+str(cue_stick_original_to_current)+"] >= cue_stick_original_to_target["+str(cue_stick_original_to_target)+"] and cue_stick_to_target["+str(cue_stick_to_target)+"] <= cue_stick_original_to_target["+str(cue_stick_original_to_target)+"])")
-	# not (cue_stick_original_to_current[0.298819] >= cue_stick_original_to_target[0.108277] and cue_stick_to_target[0.190542] <= cue_stick_original_to_target[0.108277])
 
 	if (cue_stick_original_to_current >= cue_stick_original_to_target) and (cue_stick_to_target <= cue_stick_original_to_current):
 		var speed_adjusted = ease(speed * 0.005, -2) # see https://github.com/godotengine/godot/issues/10572
@@ -50,11 +48,6 @@ func physics_process(game, delta: float):
 		game.cueStick.visible = false
 		game.target.visible = false
 		game.white_ball_center.visible = false
-		print("speed = "+str(current_joy_axis)+" - "+str(last_joy_axis_measurement)+" / "+str(delta))
-		print("Applied force:")
-		print(str(apply_force))
-		print("At point:")
-		print(str(impulse_offset))
 		
 		var next = waiting_play_to_end.new()
 		next.init()

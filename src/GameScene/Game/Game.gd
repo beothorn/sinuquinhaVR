@@ -22,6 +22,7 @@ onready var cuestick_pos = $VRPlayer/RightController/CueStick
 onready var white_ball_node = $WhiteBall
 onready var balls_node = $Balls
 onready var white_ball_center = $WhiteBallCenter
+onready var HUD = $HUD
 
 onready var white_ball_gen = preload("res://src/GameScene/Game/Balls/WhiteBallRigidBody.tscn")
 onready var ball_gen = preload("res://src/GameScene/Game/Balls/BallRigidBody.tscn")
@@ -62,8 +63,29 @@ func _initialize_vr():
 		left_controller.connect("on_ax_pressed", self, "save_table")
 		left_controller.connect("on_by_pressed", self, "load_saved_table")
 
+
+var pressed = false
 func _physics_process(delta: float):
 	game_state = game_state.physics_process(self, delta)
+	
+	var cuestick_raycast = get_world().direct_space_state.intersect_ray(
+		right_controller_joy.global_transform.origin,
+		right_controller_joy.global_transform.origin + (right_controller_joy.global_transform.basis.z.normalized() * 6),
+		[],
+		16 # HUD layer
+	)
+	
+	if cuestick_raycast.size() > 0:
+		$MouseCursor.global_transform.origin = cuestick_raycast.position
+		HUD.mouse_at(cuestick_raycast.position)
+		if right_controller.is_trigger_pressed():
+			if not pressed:
+				pressed = true
+				print("WILL CLICK")
+				HUD.mouse_press_at(cuestick_raycast.position)
+		else:
+			HUD.mouse_release_at(cuestick_raycast.position)
+			pressed = false
 
 func _readd_white_ball(pos: Vector3 = Vector3(-0.676, 1.024, 0.008)):
 	white_ball = white_ball_gen.instance()
@@ -132,3 +154,9 @@ func _on_Ground_body_entered(body):
 	if body == white_ball:
 		_readd_white_ball()
 
+func _on_LeftController_on_menu_pressed():
+	get_tree().quit()
+
+func _on_ToolButton_pressed():
+	print("CLICK")
+	get_tree().quit()

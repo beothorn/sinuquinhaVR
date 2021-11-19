@@ -4,6 +4,7 @@ class_name QuestController
 
 signal on_ax_pressed
 signal on_by_pressed
+signal on_menu_pressed
 
 const CONTROLLER_VECTOR_DEADZONE = 0.65
 const CONTROLLER_AXIS_DEADZONE = 0.3
@@ -17,6 +18,8 @@ func _on_button_pressed(button):
 		emit_signal("on_ax_pressed")
 	if button == JOY_OCULUS_BY:
 		emit_signal("on_by_pressed")
+	if button == JOY_OCULUS_MENU:
+		emit_signal("on_menu_pressed")
 
 func is_trigger_pressed() -> bool:
 	return get_joystick_axis(JOY_VR_ANALOG_TRIGGER) > TRIGGER_AXIS_DEADZONE
