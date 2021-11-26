@@ -70,7 +70,7 @@ func _physics_process(delta: float):
 	
 	var cuestick_raycast = get_world().direct_space_state.intersect_ray(
 		right_controller_joy.global_transform.origin,
-		right_controller_joy.global_transform.origin + (right_controller_joy.global_transform.basis.z.normalized() * 6),
+		right_controller_joy.global_transform.origin + (right_controller_joy.global_transform.basis.z.normalized() * 10),
 		[],
 		16 # HUD layer
 	)
@@ -80,7 +80,6 @@ func _physics_process(delta: float):
 		if right_controller.is_trigger_pressed():
 			if not pressed:
 				pressed = true
-				print("WILL CLICK")
 				HUD.mouse_press_at(cuestick_raycast.position)
 		else:
 			HUD.mouse_release_at(cuestick_raycast.position)
@@ -155,8 +154,8 @@ func _on_Ground_body_entered(body):
 	if body == white_ball:
 		_readd_white_ball()
 
-func _on_LeftController_on_menu_pressed():
-	get_tree().quit()
-
 func _on_Components_quit():
 	get_tree().quit()
+
+func _on_Components_practice():
+	_reset_table()

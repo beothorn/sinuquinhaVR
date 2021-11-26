@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=2]
+[gd_scene load_steps=56 format=2]
 
 [ext_resource path="res://src/GameScene/Game/VRPlayer/Controller/Oculus Touch for Quest 2/left_joy.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/GameScene/Game/Room/testPoolRoom.tscn" type="PackedScene" id=2]
@@ -32,17 +32,6 @@ albedo_texture = SubResource( 3 )
 [sub_resource type="PlaneMesh" id=5]
 resource_local_to_scene = true
 material = SubResource( 4 )
-
-[sub_resource type="ViewportTexture" id=6]
-viewport_path = NodePath("VRPlayer/LeftController/MeshInstance/Debug")
-
-[sub_resource type="SpatialMaterial" id=7]
-resource_local_to_scene = true
-albedo_texture = SubResource( 6 )
-
-[sub_resource type="PlaneMesh" id=8]
-resource_local_to_scene = true
-material = SubResource( 7 )
 
 [sub_resource type="PhysicsMaterial" id=9]
 absorbent = true
@@ -116,6 +105,23 @@ data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
 
 [sub_resource type="ConcavePolygonShape" id=23]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="ConcavePolygonShape" id=40]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="ConcavePolygonShape" id=41]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="ConcavePolygonShape" id=42]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="ConcavePolygonShape" id=43]
+data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
+
+[sub_resource type="CubeMesh" id=44]
+
+[sub_resource type="ConcavePolygonShape" id=45]
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
 
 [sub_resource type="CubeMesh" id=24]
@@ -219,20 +225,6 @@ transform = Transform( 0.0150897, 0.0981047, 0.0121554, -0.00242612, 0.01266, -0
 mesh = SubResource( 5 )
 material/0 = null
 
-[node name="MeshInstance" type="MeshInstance" parent="VRPlayer/LeftController"]
-transform = Transform( 0.00781782, 0.935112, 0.00642371, 0, 0.0541361, -0.0220105, -0.0501936, 0.748043, 0.00513864, 0, 0.23493, 0 )
-mesh = SubResource( 8 )
-material/0 = null
-
-[node name="Debug" type="Viewport" parent="VRPlayer/LeftController/MeshInstance"]
-size = Vector2( 50, 50 )
-render_target_v_flip = true
-
-[node name="Label" type="Label" parent="VRPlayer/LeftController/MeshInstance/Debug"]
-margin_right = 40.0
-margin_bottom = 14.0
-text = "foo"
-
 [node name="RightController" type="ARVRController" parent="VRPlayer"]
 controller_id = 2
 script = ExtResource( 8 )
@@ -316,6 +308,53 @@ material/0 = ExtResource( 7 )
 [node name="CollisionShape6" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
 transform = Transform( 1.14631, 0, 0, 0, 0.06, 0, 0, 0, 0.14, -1.27, 0.16, 1.409 )
 shape = SubResource( 23 )
+
+[node name="RightMesh2" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 0.0430364, 0, 0, 0, 0.06, 0, 0, 0, 1.56598, 2.86187, 0.16, 0 )
+mesh = SubResource( 16 )
+material/0 = ExtResource( 7 )
+
+[node name="CollisionShape7" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 0.0430364, 0, 0, 0, 0.06, 0, 0, 0, 1.56598, 2.86187, 0.16, 0 )
+shape = SubResource( 40 )
+
+[node name="RightMesh3" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 0.042772, 0, 0, 0, 0.0596313, 0, 0, 0, 1.55636, -2.85877, 0.16, 0 )
+mesh = SubResource( 16 )
+material/0 = ExtResource( 7 )
+
+[node name="CollisionShape8" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 0.042772, 0, 0, 0, 0.0596313, 0, 0, 0, 1.55636, -2.85877, 0.16, 0 )
+shape = SubResource( 41 )
+
+[node name="UpRightMesh2" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 2.91878, 0, 0, 0, 0.06, 0, 0, 0, 0.0420917, 0.0113794, 0.16, -1.58384 )
+mesh = SubResource( 19 )
+material/0 = ExtResource( 7 )
+
+[node name="CollisionShape9" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 2.91878, 0, 0, 0, 0.06, 0, 0, 0, 0.0420917, 0.0113794, 0.16, -1.58384 )
+shape = SubResource( 42 )
+
+[node name="UpRightMesh3" type="MeshInstance" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 2.91878, 0, 0, 0, 0.06, 0, 0, 0, 0.0420917, 0.0113794, 0.16, 1.5842 )
+mesh = SubResource( 19 )
+material/0 = ExtResource( 7 )
+
+[node name="CollisionShape10" type="CollisionShape" parent="PoolTable/PoolTableBorders"]
+transform = Transform( 2.91878, 0, 0, 0, 0.06, 0, 0, 0, 0.0420917, 0.0113794, 0.16, 1.5842 )
+shape = SubResource( 43 )
+
+[node name="BallCatcher" type="StaticBody" parent="PoolTable"]
+
+[node name="Catcher" type="MeshInstance" parent="PoolTable/BallCatcher"]
+transform = Transform( 2.97663, 0, 0, 0, 0.123801, 0, 0, 0, 1.71804, 0, -0.371279, 0 )
+mesh = SubResource( 44 )
+material/0 = null
+
+[node name="CollisionShape" type="CollisionShape" parent="PoolTable/BallCatcher"]
+transform = Transform( 2.97663, 0, 0, 0, 0.123801, 0, 0, 0, 1.71804, 0, -0.371279, 0 )
+shape = SubResource( 45 )
 
 [node name="Balls" type="Spatial" parent="."]
 
@@ -485,6 +524,6 @@ layers = 16
 mesh = SubResource( 38 )
 material/0 = SubResource( 39 )
 
-[connection signal="on_menu_pressed" from="VRPlayer/LeftController" to="." method="_on_LeftController_on_menu_pressed"]
 [connection signal="body_entered" from="Walls" to="." method="_on_Ground_body_entered"]
+[connection signal="practice" from="HUD/HUD/GUI/Components" to="." method="_on_Components_practice"]
 [connection signal="quit" from="HUD/HUD/GUI/Components" to="." method="_on_Components_quit"]
