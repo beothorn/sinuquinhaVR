@@ -76,7 +76,6 @@ func _physics_process(delta: float):
 	)
 	
 	if cuestick_raycast.size() > 0:
-		$MouseCursor.global_transform.origin = cuestick_raycast.position
 		HUD.mouse_at(cuestick_raycast.position)
 		if right_controller.is_trigger_pressed():
 			if not pressed:
@@ -86,6 +85,8 @@ func _physics_process(delta: float):
 		else:
 			HUD.mouse_release_at(cuestick_raycast.position)
 			pressed = false
+	else:
+		HUD.hide_cursor()
 
 func _readd_white_ball(pos: Vector3 = Vector3(-0.676, 1.024, 0.008)):
 	white_ball = white_ball_gen.instance()

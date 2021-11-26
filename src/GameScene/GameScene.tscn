@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=2]
+[gd_scene load_steps=53 format=2]
 
 [ext_resource path="res://src/GameScene/Game/VRPlayer/Controller/Oculus Touch for Quest 2/left_joy.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/GameScene/Game/Room/testPoolRoom.tscn" type="PackedScene" id=2]
@@ -12,6 +12,7 @@
 [ext_resource path="res://src/GameScene/Game/Balls/WhiteBallRigidBody.tscn" type="PackedScene" id=10]
 [ext_resource path="res://src/GameScene/UI_Theme.tres" type="Theme" id=11]
 [ext_resource path="res://src/GameScene/Game/HUD/HUD.gd" type="Script" id=12]
+[ext_resource path="res://src/GameScene/Game/HUD/cursor.png" type="Texture" id=13]
 
 [sub_resource type="SpatialMaterial" id=1]
 albedo_color = Color( 0, 0, 0, 1 )
@@ -138,26 +139,31 @@ data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1
 [sub_resource type="ConcavePolygonShape" id=31]
 data = PoolVector3Array( -1, 1, 1, 1, 1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, 1, -1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, -1 )
 
-[sub_resource type="SpatialMaterial" id=35]
+[sub_resource type="SpatialMaterial" id=32]
 albedo_color = Color( 0.0313726, 0.0117647, 0.0117647, 1 )
 
-[sub_resource type="CylinderShape" id=36]
+[sub_resource type="CylinderShape" id=33]
 radius = 0.0154764
 height = 1.59189
 
-[sub_resource type="PlaneMesh" id=32]
+[sub_resource type="PlaneMesh" id=34]
 
-[sub_resource type="ViewportTexture" id=38]
+[sub_resource type="ViewportTexture" id=35]
 viewport_path = NodePath("HUD/HUD/GUI")
 
-[sub_resource type="SpatialMaterial" id=34]
+[sub_resource type="SpatialMaterial" id=36]
 resource_local_to_scene = true
 flags_transparent = true
 flags_unshaded = true
-albedo_texture = SubResource( 38 )
+albedo_texture = SubResource( 35 )
 
-[sub_resource type="ConcavePolygonShape" id=39]
+[sub_resource type="ConcavePolygonShape" id=37]
 data = PoolVector3Array( 1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1 )
+
+[sub_resource type="CubeMesh" id=38]
+
+[sub_resource type="SpatialMaterial" id=39]
+albedo_color = Color( 0.384314, 0.384314, 0.384314, 1 )
 
 [node name="Game" type="Spatial"]
 script = ExtResource( 6 )
@@ -379,9 +385,8 @@ ballNumber = 15
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54525, 1.02376, 0.00813487 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
-transform = Transform( 0.486431, -0.868246, 0.0976435, -0.371336, -0.104281, 0.922624, -0.790882, -0.485052, -0.373136, 0, 4.12346, 0 )
+transform = Transform( 0.486431, -0.868246, 0.0976433, -0.371336, -0.104281, 0.922624, -0.790882, -0.485051, -0.373136, 0, 12.9855, 0 )
 shadow_enabled = true
-shadow_bias = -0.02
 
 [node name="Walls" type="Area" parent="."]
 
@@ -436,7 +441,7 @@ visible = false
 inner_radius = 0.0574119
 outer_radius = 0.0540073
 sides = 32
-material = SubResource( 35 )
+material = SubResource( 32 )
 
 [node name="CueStick" parent="." instance=ExtResource( 3 )]
 
@@ -444,11 +449,7 @@ material = SubResource( 35 )
 
 [node name="CollisionShape" type="CollisionShape" parent="CueStick/Area"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.796598, 0 )
-shape = SubResource( 36 )
-
-[node name="MouseCursor" type="CSGSphere" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -32.1225, -0.271912, 0 )
-radius = 0.0214749
+shape = SubResource( 33 )
 
 [node name="HUD" type="StaticBody" parent="."]
 transform = Transform( -4.37114e-08, 1, -4.37114e-08, 0, -4.37114e-08, -1, -1, -4.37114e-08, 1.91069e-15, -4.749, 1.581, 0.065 )
@@ -457,14 +458,20 @@ collision_mask = 0
 script = ExtResource( 12 )
 
 [node name="HUD" type="MeshInstance" parent="HUD"]
+transform = Transform( 1, 0, 0, 0, 1, -8.35189e-23, 0, -8.35188e-23, 1, 0, 0, 0 )
 layers = 16
-mesh = SubResource( 32 )
-material/0 = SubResource( 34 )
+mesh = SubResource( 34 )
+material/0 = SubResource( 36 )
 
 [node name="GUI" type="Viewport" parent="HUD/HUD"]
-size = Vector2( 256, 256 )
+size = Vector2( 1024, 1024 )
+transparent_bg = true
 hdr = false
 render_target_v_flip = true
+
+[node name="Cursor" type="Sprite" parent="HUD/HUD/GUI"]
+position = Vector2( 50, 50 )
+texture = ExtResource( 13 )
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD/HUD/GUI"]
 margin_right = 40.0
@@ -508,7 +515,13 @@ __meta__ = {
 }
 
 [node name="CollisionShape" type="CollisionShape" parent="HUD"]
-shape = SubResource( 39 )
+shape = SubResource( 37 )
+
+[node name="HUD2" type="MeshInstance" parent="HUD"]
+transform = Transform( 1.04314, 4.38331e-08, -1.916e-15, 4.38331e-08, 0.0403595, 4.37167e-08, -1.91601e-15, 4.37167e-08, 1.04048, 0, -0.0549164, 0 )
+layers = 16
+mesh = SubResource( 38 )
+material/0 = SubResource( 39 )
 
 [connection signal="on_menu_pressed" from="VRPlayer/LeftController" to="." method="_on_LeftController_on_menu_pressed"]
 [connection signal="body_entered" from="Walls" to="." method="_on_Ground_body_entered"]
