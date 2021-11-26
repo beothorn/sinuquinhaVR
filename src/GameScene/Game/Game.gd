@@ -158,6 +158,5 @@ func _on_Ground_body_entered(body):
 func _on_LeftController_on_menu_pressed():
 	get_tree().quit()
 
-func _on_ToolButton_pressed():
-	print("CLICK")
+func _on_Components_quit():
 	get_tree().quit()

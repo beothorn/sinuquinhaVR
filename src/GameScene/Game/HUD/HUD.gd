@@ -1,11 +1,7 @@
 extends StaticBody
 
-onready var cueStickCollisionDetector: Label = $HUD/GUI/MarginContainer/VSplitContainer/VSplitContainer2/pos
 onready var gui: Viewport = $HUD/GUI
 onready var cursor: Sprite = $HUD/GUI/Cursor
-
-func setPos(p: Vector2):
-	cueStickCollisionDetector.text = str(p)
 
 func _get_pos_2d(pos3: Vector3):
 	var relative_pos3: Vector3 = global_transform.origin - pos3 
@@ -23,7 +19,6 @@ func mouse_at(pos3: Vector3):
 	var new_mouse_pos = _get_pos_2d(pos3)
 	if new_mouse_pos:
 		mouse_position.position = new_mouse_pos
-		setPos(mouse_position.position)
 		gui.input(mouse_position)
 		cursor.visible = true
 		cursor.position = mouse_position.position

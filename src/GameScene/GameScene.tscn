@@ -10,7 +10,7 @@
 [ext_resource path="res://src/GameScene/Game/VRPlayer/Controller/Controller.gd" type="Script" id=8]
 [ext_resource path="res://src/GameScene/Game/Balls/BallRigidBody.tscn" type="PackedScene" id=9]
 [ext_resource path="res://src/GameScene/Game/Balls/WhiteBallRigidBody.tscn" type="PackedScene" id=10]
-[ext_resource path="res://src/GameScene/UI_Theme.tres" type="Theme" id=11]
+[ext_resource path="res://src/GameScene/Game/HUD/Components.tscn" type="PackedScene" id=11]
 [ext_resource path="res://src/GameScene/Game/HUD/HUD.gd" type="Script" id=12]
 [ext_resource path="res://src/GameScene/Game/HUD/cursor.png" type="Texture" id=13]
 
@@ -471,48 +471,10 @@ render_target_v_flip = true
 
 [node name="Cursor" type="Sprite" parent="HUD/HUD/GUI"]
 position = Vector2( 50, 50 )
+z_index = 1
 texture = ExtResource( 13 )
 
-[node name="MarginContainer" type="MarginContainer" parent="HUD/HUD/GUI"]
-margin_right = 40.0
-margin_bottom = 40.0
-theme = ExtResource( 11 )
-
-[node name="VSplitContainer" type="VSplitContainer" parent="HUD/HUD/GUI/MarginContainer"]
-margin_right = 97.0
-margin_bottom = 74.0
-theme = ExtResource( 11 )
-
-[node name="ToolButton" type="ToolButton" parent="HUD/HUD/GUI/MarginContainer/VSplitContainer"]
-margin_right = 97.0
-margin_bottom = 22.0
-theme = ExtResource( 11 )
-text = "Quit"
-flat = false
-
-[node name="VSplitContainer2" type="VSplitContainer" parent="HUD/HUD/GUI/MarginContainer/VSplitContainer"]
-margin_top = 34.0
-margin_right = 97.0
-margin_bottom = 74.0
-
-[node name="Label" type="Label" parent="HUD/HUD/GUI/MarginContainer/VSplitContainer/VSplitContainer2"]
-margin_right = 97.0
-margin_bottom = 14.0
-theme = ExtResource( 11 )
-text = "Cursor position"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="pos" type="Label" parent="HUD/HUD/GUI/MarginContainer/VSplitContainer/VSplitContainer2"]
-margin_top = 26.0
-margin_right = 97.0
-margin_bottom = 40.0
-theme = ExtResource( 11 )
-text = "(0,0)"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="Components" parent="HUD/HUD/GUI" instance=ExtResource( 11 )]
 
 [node name="CollisionShape" type="CollisionShape" parent="HUD"]
 shape = SubResource( 37 )
@@ -525,4 +487,4 @@ material/0 = SubResource( 39 )
 
 [connection signal="on_menu_pressed" from="VRPlayer/LeftController" to="." method="_on_LeftController_on_menu_pressed"]
 [connection signal="body_entered" from="Walls" to="." method="_on_Ground_body_entered"]
-[connection signal="pressed" from="HUD/HUD/GUI/MarginContainer/VSplitContainer/ToolButton" to="." method="_on_ToolButton_pressed"]
+[connection signal="quit" from="HUD/HUD/GUI/Components" to="." method="_on_Components_quit"]
